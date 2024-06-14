@@ -1,0 +1,54 @@
+class OrderDeliveryResponse {
+  int status;
+  bool error;
+  Messages messages;
+
+  OrderDeliveryResponse({
+    required this.status,
+    required this.error,
+    required this.messages,
+  });
+
+  factory OrderDeliveryResponse.fromJson(Map<String, dynamic> json) {
+    return OrderDeliveryResponse(
+      status: json['status'] ?? 0,
+      error: json['error'] ?? false,
+      messages: Messages.fromJson(json['messages'] ?? {}),
+    );
+  }
+
+  // Method to convert an instance to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'error': error,
+      'messages': messages.toJson(),
+    };
+  }
+}
+
+class Messages {
+  String responseCode;
+  String status;
+
+  Messages({
+    required this.responseCode,
+    required this.status,
+  });
+
+  // Factory constructor to create an instance from JSON
+  factory Messages.fromJson(Map<String, dynamic> json) {
+    return Messages(
+      responseCode: json['responsecode'] ?? '',
+      status: json['status'] ?? '',
+    );
+  }
+
+  // Method to convert an instance to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'responsecode': responseCode,
+      'status': status,
+    };
+  }
+}
