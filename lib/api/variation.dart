@@ -1,17 +1,19 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import 'package:sm_delivery/constants.dart/constants.dart';
-import 'package:sm_delivery/models/order_response.dart';
 
-class order_api {
-  Future<orderResponse> order({
-    required String delivery_boy_id,
+import '../constants.dart/constants.dart';
+import '../models/variation.dart';
+
+class variation_api {
+  Future<variationResponse> variation_details({
+    required String user_id,
+    required String variation_id,
   }) async {
-    var uri = Uri.parse('$base_url/API/delivery_boy_allorders');
+    var uri = Uri.parse('$base_url/API/variation_dtls');
 
     Map<String, dynamic> body = {
-      'delivery_boy_id': delivery_boy_id,
+      'user_id': user_id,
+      'variation_id': variation_id,
     };
 
     final response = await http.post(
@@ -25,13 +27,13 @@ class order_api {
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      print('catagory registration successful: $jsonResponse');
-      return orderResponse.fromJson(jsonResponse);
+
+      return variationResponse.fromJson(jsonResponse);
     } else {
       final jsonResponse =
           response.body.isNotEmpty ? json.decode(response.body) : {};
       print('Request failed with status: ${response.statusCode}.');
-      return orderResponse.fromJson(jsonResponse);
+      return variationResponse.fromJson(jsonResponse);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/order_delivery_response';
 
 class order_delivery_status_api {
@@ -7,8 +8,7 @@ class order_delivery_status_api {
     required String orderid,
     required String status,
   }) async {
-    var uri =
-        Uri.parse('http://odishasweets.in/jumbotail/API/updateorderstatus');
+    var uri = Uri.parse('$base_url/API/updateorderstatus');
 
     Map<String, dynamic> body = {
       'orderid': orderid,

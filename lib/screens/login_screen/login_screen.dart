@@ -1,8 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:sm_delivery/api/login.dart';
 import 'package:sm_delivery/components/basic_text.dart';
 import 'package:sm_delivery/core/theme/base_color.dart';
 import 'package:sm_delivery/core/utils/shared_preference.dart';
+import 'package:sm_delivery/models/login_details/user_detail.dart';
 import 'package:sm_delivery/navbar.dart';
 import 'package:sm_delivery/screens/forgot_password_screen/forgot_password_screen.dart';
 import 'package:sm_delivery/screens/wrapper.dart';
@@ -28,38 +33,36 @@ class _login_screenState extends State<login_screen> {
         username: username,
         password: password,
       );
-
-      if (result.messages.status.userId.isNotEmpty) {
-        await SharedPreferencesService.setString('username', username);
-        await SharedPreferencesService.setString('password', password);
-        final storedUsername =
-            await SharedPreferencesService.getString('username');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => wrapper(),
+      // final userData = result.messages.status as userStatus;
+      // final errorData = result.messages.status as String;
+      if (result.messages.status is String) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Invalid username and password'),
+            backgroundColor: Colors.red,
           ),
         );
       } else {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text("Login Failed"),
-            content: const Text("Invalid username or password"),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: Container(
-                  color: Colors.red,
-                  padding: const EdgeInsets.all(14),
-                  child: const Text("ok"),
-                ),
-              ),
-            ],
-          ),
-        );
+        userStatus userData = result.messages.status;
+        if (userData.userId.isNotEmpty) {
+          await SharedPreferencesService.setString('username', username);
+          await SharedPreferencesService.setString('password', password);
+          final storedUsername =
+              await SharedPreferencesService.getString('username');
+          print('here is the stored username: $storedUsername');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login Successful'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => wrapper(),
+            ),
+          );
+        }
       }
     }
   }

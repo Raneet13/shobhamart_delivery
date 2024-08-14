@@ -1,27 +1,52 @@
-import 'dart:convert';
+class orderDetailedResponse {
+  final bool error;
+  final String message;
+  final List<orderDetails> data;
+  final List<TransactionDetails> transactionDetails;
+
+  orderDetailedResponse({
+    required this.error,
+    required this.message,
+    required this.data,
+    required this.transactionDetails,
+  });
+
+  factory orderDetailedResponse.fromJson(Map<String, dynamic> json) {
+    return orderDetailedResponse(
+      error: json['error'] ?? false,
+      message: json['message'] ?? '',
+      data: (json['data']['order_details'] as List)
+          .map((i) => orderDetails.fromJson(i))
+          .toList(),
+      transactionDetails: (json['data']['tranction_details'] as List)
+          .map((i) => TransactionDetails.fromJson(i))
+          .toList(),
+    );
+  }
+}
 
 class orderDetails {
-  String ordersId;
-  String productName;
-  String variationId;
-  String qty;
-  String img;
-  String price;
-  String userId;
-  String? shippingType;
-  String? shippingCharge;
-  String orderId;
-  String addressId;
-  String paymentMode;
-  String deliveryBoyId;
-  String status;
-  String? reason;
-  String wallet;
-  String? txnId;
-  String couponCode;
-  String couponAmnt;
-  String createdDate;
-  String updateDate;
+  final String ordersId;
+  final String productName;
+  final String variationId;
+  final String qty;
+  final String img;
+  final String price;
+  final String userId;
+  final String? shippingType;
+  final String? shippingCharge;
+  final String orderId;
+  final String? addressId;
+  final String paymentMode;
+  final String deliveryBoyId;
+  final String status;
+  final String? reason;
+  final String wallet;
+  final String? txnId;
+  final String couponCode;
+  final String couponAmount;
+  final String createdDate;
+  final String updateDate;
 
   orderDetails({
     required this.ordersId,
@@ -34,7 +59,7 @@ class orderDetails {
     this.shippingType,
     this.shippingCharge,
     required this.orderId,
-    required this.addressId,
+    this.addressId,
     required this.paymentMode,
     required this.deliveryBoyId,
     required this.status,
@@ -42,7 +67,7 @@ class orderDetails {
     required this.wallet,
     this.txnId,
     required this.couponCode,
-    required this.couponAmnt,
+    required this.couponAmount,
     required this.createdDate,
     required this.updateDate,
   });
@@ -67,68 +92,50 @@ class orderDetails {
       wallet: json['wallet'] ?? '',
       txnId: json['txn_id'] ?? '',
       couponCode: json['coupon_code'] ?? '',
-      couponAmnt: json['coupon_amnt'] ?? '',
+      couponAmount: json['coupon_amnt'] ?? '',
       createdDate: json['created_date'] ?? '',
       updateDate: json['update_date'] ?? '',
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'orders_id': ordersId,
-      'productname': productName,
-      'variation_id': variationId,
-      'qty': qty,
-      'img': img,
-      'price': price,
-      'user_id': userId,
-      'shipping_type': shippingType ?? '',
-      'shipping_charge': shippingCharge ?? '',
-      'order_id': orderId,
-      'address_id': addressId,
-      'payment_mode': paymentMode,
-      'deliveryboy_id': deliveryBoyId,
-      'status': status,
-      'reason': reason ?? '',
-      'wallet': wallet,
-      'txn_id': txnId ?? '',
-      'coupon_code': couponCode,
-      'coupon_amnt': couponAmnt,
-      'created_date': createdDate,
-      'update_date': updateDate,
-    };
-  }
 }
 
-class orderDetailedResponse {
-  int status;
-  bool error;
-  String message;
-  List<orderDetails> data;
+class TransactionDetails {
+  final String trId;
+  final String custId;
+  final String orderId;
+  final String tAmount;
+  final String paidAmount;
+  final String paymentType;
+  final String paymentMode;
+  final String? transactionId;
+  final String date;
+  final String createdDate;
 
-  orderDetailedResponse({
-    required this.status,
-    required this.error,
-    required this.message,
-    required this.data,
+  TransactionDetails({
+    required this.trId,
+    required this.custId,
+    required this.orderId,
+    required this.tAmount,
+    required this.paidAmount,
+    required this.paymentType,
+    required this.paymentMode,
+    this.transactionId,
+    required this.date,
+    required this.createdDate,
   });
 
-  factory orderDetailedResponse.fromJson(Map<String, dynamic> json) {
-    return orderDetailedResponse(
-      status: json['status'] ?? 0,
-      error: json['error'] ?? false,
-      message: json['message'] ?? '',
-      data:
-          (json['data'] as List).map((i) => orderDetails.fromJson(i)).toList(),
+  factory TransactionDetails.fromJson(Map<String, dynamic> json) {
+    return TransactionDetails(
+      trId: json['tr_id'] ?? '',
+      custId: json['cust_id'] ?? '',
+      orderId: json['order_id'] ?? '',
+      tAmount: json['t_amount'] ?? '',
+      paidAmount: json['paid_amount'] ?? '',
+      paymentType: json['payment_type'] ?? '',
+      paymentMode: json['payment_mode'] ?? '',
+      transactionId: json['tranction_id'] ?? '',
+      date: json['date'] ?? '',
+      createdDate: json['created_date'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'status': status,
-      'error': error,
-      'message': message,
-      'data': data.map((order) => order.toJson()).toList(),
-    };
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/login_details/user_detail.dart';
 
 class login_api {
@@ -7,8 +8,7 @@ class login_api {
     required String username,
     required String password,
   }) async {
-    var uri =
-        Uri.parse('http://odishasweets.in/jumbotail/API/deliveryboy_login');
+    var uri = Uri.parse('$base_url/API/deliveryboy_login');
 
     Map<String, dynamic> body = {
       'username': username,

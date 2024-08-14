@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/reset_password_response.dart';
 
 class reset_password_api {
@@ -7,7 +8,7 @@ class reset_password_api {
     required String contact_no,
     required String password,
   }) async {
-    var uri = Uri.parse('http://odishasweets.in/jumbotail/API/reset_password');
+    var uri = Uri.parse('$base_url/API/reset_password');
 
     Map<String, dynamic> body = {
       'contact_no': contact_no,

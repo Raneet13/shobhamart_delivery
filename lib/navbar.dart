@@ -53,10 +53,7 @@ class _navbarState extends State<navbar> {
         centerTitle: true,
         title: basic_text(
           title: 'Shobamart Delivery',
-          style: Theme.of(context)
-              .textTheme
-              .headline6!
-              .copyWith(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         // actions: [
         //   Hero(
@@ -114,25 +111,23 @@ class _navbarState extends State<navbar> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.grey[100],
+        elevation: 4,
         iconSize: 28,
         selectedLabelStyle:
-            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        unselectedLabelStyle:
             TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        unselectedLabelStyle:
+            TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         selectedItemColor: AppColors.primarycolor2,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.all_inbox_outlined),
-          //   label: 'Profile',
-          // ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

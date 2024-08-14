@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sm_delivery/components/basic_text.dart';
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/core/theme/base_color.dart';
 import 'package:sm_delivery/models/login_details/user_detail.dart';
 
@@ -23,19 +24,17 @@ class _document_screenState extends State<document_screen> {
   List<Document> documents = [];
   @override
   void initState() {
+    userStatus userstatus = widget.userDetail!.messages.status;
     documents = [
       Document(
           title: 'Addhar Front',
-          imageUrl:
-              'http://odishasweets.in/jumbotail/uploads/${widget.userDetail!.messages.status.storeFont}'),
+          imageUrl: '$base_url/uploads/${userstatus.storeFont}'),
       Document(
           title: 'Addhar',
-          imageUrl:
-              'http://odishasweets.in/jumbotail/uploads/${widget.userDetail!.messages.status.adharBack}'),
+          imageUrl: '$base_url/uploads/${userstatus.adharBack}'),
       Document(
           title: 'Store Image',
-          imageUrl:
-              'http://odishasweets.in/jumbotail/uploads/${widget.userDetail!.messages.status.storeImage}'),
+          imageUrl: '$base_url/uploads/${userstatus.storeImage}'),
     ];
     super.initState();
   }

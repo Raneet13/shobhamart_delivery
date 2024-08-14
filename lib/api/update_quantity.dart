@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/order_details_response.dart';
 import 'package:sm_delivery/models/update_qty_response.dart';
 
@@ -9,7 +10,7 @@ class update_quantity_api {
     required String orders_id,
     required String qty,
   }) async {
-    var uri = Uri.parse('http://odishasweets.in/jumbotail/API/update_order');
+    var uri = Uri.parse('$base_url/API/update_order');
 
     Map<String, dynamic> body = {
       'orders_id': orders_id,

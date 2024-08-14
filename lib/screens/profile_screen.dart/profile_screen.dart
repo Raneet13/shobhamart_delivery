@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sm_delivery/components/basic_text.dart';
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/core/theme/base_color.dart';
 import 'package:sm_delivery/core/utils/shared_preference.dart';
 import 'package:sm_delivery/models/login_details/user_detail.dart';
@@ -80,14 +81,8 @@ class profile_screen extends StatelessWidget {
                           ),
                           image: DecorationImage(
                               image: NetworkImage(
-                                  'http://odishasweets.in/jumbotail/uploads/${userDetail!.messages.status.storeImage}'),
+                                  '$base_url/uploads/${userDetail!.messages.status.storeImage}'),
                               fit: BoxFit.contain)),
-                      // child: CircleAvatar(
-                      //   radius: 30,
-                      //   backgroundImage: NetworkImage(
-                      //     'http://odishasweets.in/jumbotail/uploads/${userDetail!.messages.status.storeImage}',
-                      //   ),
-                      // ),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -158,10 +153,10 @@ class profile_screen extends StatelessWidget {
                 ),
                 child: basic_text(
                   title: 'Log Out',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.white),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),

@@ -21,19 +21,51 @@ class userResponse {
 }
 
 class userMessages {
-  final String responsecode;
-  final userStatus status;
+  String responseCode;
+  dynamic status;
 
   userMessages({
-    required this.responsecode,
+    required this.responseCode,
     required this.status,
   });
 
   factory userMessages.fromJson(Map<String, dynamic> json) {
+    var statusData = json['status'];
+    dynamic parsedStatus;
+
+    if (statusData is Map<String, dynamic>) {
+      // If status is a list, parse it as a list of User
+      parsedStatus = statusData.isNotEmpty
+          ? userStatus.fromJson(statusData)
+          : userStatus(
+              userId: '',
+              fullname: '',
+              email: '',
+              contact: '',
+              status: '',
+              storeImage: '',
+              adharNo: '',
+              storeFont: '',
+              adharBack: '',
+              address: '',
+              isLoggedIn: false,
+            );
+    } else if (statusData is String) {
+      // If status is a string, assign it directly
+      parsedStatus = statusData;
+    }
+
     return userMessages(
-      responsecode: json['responsecode'] ?? '',
-      status: userStatus.fromJson(json['status'] ?? {}),
+      responseCode: json['responsecode'],
+      status: parsedStatus,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'responsecode': responseCode,
+      'status': status is Map<String, dynamic> ? status.toJson() : status,
+    };
   }
 }
 

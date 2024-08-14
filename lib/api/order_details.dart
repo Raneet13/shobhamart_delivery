@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/order_details_response.dart';
 
 class order_detailed_api {
   Future<orderDetailedResponse> order_detailed({
     required String order_id,
   }) async {
-    var uri = Uri.parse('http://odishasweets.in/jumbotail/API/getSingleOrder');
+    var uri = Uri.parse('$base_url/API/getSingleOrder');
 
     Map<String, dynamic> body = {
       'order_id': order_id,

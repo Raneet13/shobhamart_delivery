@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/models/address_response.dart';
 
 class view_address_api {
   Future<AddressResponse> view_address({
     required String user_id,
   }) async {
-    var uri = Uri.parse('http://odishasweets.in/jumbotail/API/view_address');
+    var uri = Uri.parse('$base_url/API/view_address');
 
     Map<String, dynamic> body = {
       'user_id': user_id,

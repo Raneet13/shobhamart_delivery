@@ -1,17 +1,18 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import 'package:sm_delivery/constants.dart/constants.dart';
-import 'package:sm_delivery/models/order_response.dart';
+import '../constants.dart/constants.dart';
+import '../models/single_product_response.dart';
 
-class order_api {
-  Future<orderResponse> order({
-    required String delivery_boy_id,
+class single_product_api {
+  Future<SingleProductResponse> single_product_details({
+    required String user_id,
+    required String product_id,
   }) async {
-    var uri = Uri.parse('$base_url/API/delivery_boy_allorders');
+    var uri = Uri.parse('$base_url/API/SingleProduct');
 
     Map<String, dynamic> body = {
-      'delivery_boy_id': delivery_boy_id,
+      'user_id': user_id,
+      'product_id': product_id,
     };
 
     final response = await http.post(
@@ -26,12 +27,14 @@ class order_api {
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       print('catagory registration successful: $jsonResponse');
-      return orderResponse.fromJson(jsonResponse);
+      return SingleProductResponse.fromJson(jsonResponse);
     } else {
       final jsonResponse =
           response.body.isNotEmpty ? json.decode(response.body) : {};
       print('Request failed with status: ${response.statusCode}.');
-      return orderResponse.fromJson(jsonResponse);
+      return SingleProductResponse.fromJson(jsonResponse);
     }
   }
+
+  singleProductDetails({required String userId, required String productId}) {}
 }

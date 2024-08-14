@@ -5,6 +5,9 @@ import 'package:sm_delivery/core/utils/shared_preference.dart';
 import 'package:sm_delivery/models/login_details/user_detail.dart';
 import 'package:sm_delivery/screens/wrapper.dart';
 
+import 'components/shopping_cart.dart';
+import 'screens/home_screen.dart/home_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesService.initialize();
@@ -19,15 +22,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider(
-        //   create: (context) => CartProvider(),
-        //   child: home_screen(),
-        // ),
-        // ChangeNotifierProvider(
-        //   create: (context) => CartNotifier(),
-        //   child: home_screen(),
-        // ),
-
+        ChangeNotifierProvider(
+          create: (context) => CartNotifier(),
+          child: wrapper(),
+        ),
         StreamProvider<userResponse?>(
           create: (context) => userDetailsStream(
               SharedPreferencesService.getString('username')!,
@@ -38,6 +36,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(fontFamily: 'Roboto'),
         routes: {'/wrapper': (context) => wrapper()},
         initialRoute: '/wrapper',
       ),
