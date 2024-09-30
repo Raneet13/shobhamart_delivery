@@ -1,18 +1,10 @@
 // ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sm_delivery/components/shopping_cart.dart';
 import 'package:sm_delivery/models/order_response.dart';
-import 'package:sm_delivery/screens/cart_screen.dart/cart_screen.dart';
 import 'package:sm_delivery/screens/search_screen.dart/search_detailed_screen.dart';
-
 import '../../api/search.dart';
-import '../../components/basic_text.dart';
 import '../../constants.dart/constants.dart';
 import '../../core/theme/base_color.dart';
 import '../../models/search_response.dart';
@@ -143,6 +135,7 @@ class _search_screenState extends State<search_screen> {
                                       product_data: _suggestions[index],
                                       order_data: widget.order_data,
                                       user: widget.user,
+                                      var_id: _suggestions[index].productId,
                                     )));
                           },
                           child: Container(

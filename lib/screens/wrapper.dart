@@ -15,15 +15,54 @@ class wrapper extends StatefulWidget {
 }
 
 class _wrapperState extends State<wrapper> {
+  @override
   Future<userResponse?> fetchUserDetails() async {
     final username = SharedPreferencesService.getString("username");
     final password = SharedPreferencesService.getString("password");
-    if (username != '' && password != '') {
+    print(username);
+    print(password);
+    if (username != null && password != null) {
       final userDetails = await userDetailsStream(username!, password!).first;
       print('User Details: ${userDetails.toString()}');
-      return userDetails;
+      if (userDetails.messages.status is String) {
+        return userResponse(
+            status: 500,
+            error: true,
+            messages: userMessages(
+                responseCode: '400',
+                status: userStatus(
+                    userId: '',
+                    fullname: '',
+                    email: '',
+                    contact: '',
+                    status: '',
+                    storeImage: '',
+                    adharNo: '',
+                    storeFont: '',
+                    adharBack: '',
+                    address: '',
+                    isLoggedIn: false)));
+      } else {
+        return userDetails;
+      }
     }
-    return null;
+    return userResponse(
+        status: 500,
+        error: true,
+        messages: userMessages(
+            responseCode: '400',
+            status: userStatus(
+                userId: '',
+                fullname: '',
+                email: '',
+                contact: '',
+                status: '',
+                storeImage: '',
+                adharNo: '',
+                storeFont: '',
+                adharBack: '',
+                address: '',
+                isLoggedIn: false)));
   }
 
   @override
@@ -35,11 +74,18 @@ class _wrapperState extends State<wrapper> {
           return Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
+        } else if (snapshot.hasError) {
+          print('Error: ${snapshot.error}');
+          return Container(
+            child: Center(
+              child: Text(snapshot.error.toString()),
+            ),
+          );
         } else if (snapshot.hasData) {
           final user = snapshot.data!;
           print('User: $user');
-          // print(user.messages.status.userId);
-          if (user.messages.status.userId != '') {
+          final userStatus useridStatus = user.messages.status as userStatus;
+          if (useridStatus.userId != '') {
             return navbar(
               userDetail: user,
             );

@@ -109,7 +109,6 @@ class drawer extends StatelessWidget {
               ],
             ),
           ),
-          // Bottom Element of Drawer
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             // height: MediaQuery.of(context).size.height * 0.1,

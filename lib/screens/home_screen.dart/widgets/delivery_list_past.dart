@@ -26,8 +26,8 @@ class _delivery_list_pastState extends State<delivery_list_past> {
   var deliveryCharges = 0;
   @override
   void initState() {
-    orderDetailedresponse =
-        order_detailed_api().order_detailed(order_id: widget.order.orderId);
+    orderDetailedresponse = order_detailed_api().order_detailed(
+        order_id: widget.order.orderId, user_id: widget.order.userId);
     // setState(() {
     //   deliveryCharges = int.parse(widget.order.shippingCharge ?? '0');
     // });

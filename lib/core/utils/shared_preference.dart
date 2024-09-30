@@ -56,6 +56,7 @@ class SharedPreferencesService {
     // Find the index of the existing product with the same productName, orderId, and userId
     int existingProductIndex = responses.indexWhere((response) =>
         response.productName == newResponse.productName &&
+        response.variation == newResponse.variation &&
         response.orderId == newResponse.orderId &&
         response.userId == newResponse.userId);
 

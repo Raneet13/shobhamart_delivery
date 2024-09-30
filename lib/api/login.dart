@@ -9,7 +9,6 @@ class login_api {
     required String password,
   }) async {
     var uri = Uri.parse('$base_url/API/deliveryboy_login');
-
     Map<String, dynamic> body = {
       'username': username,
       'password': password,

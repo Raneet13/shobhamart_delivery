@@ -3,25 +3,32 @@ class orderDetailedResponse {
   final String message;
   final List<orderDetails> data;
   final List<TransactionDetails> transactionDetails;
+  final num creaditLimit;
+  final num dueAmount;
+  final num interestAmount;
 
-  orderDetailedResponse({
-    required this.error,
-    required this.message,
-    required this.data,
-    required this.transactionDetails,
-  });
+  orderDetailedResponse(
+      {required this.error,
+      required this.message,
+      required this.data,
+      required this.transactionDetails,
+      required this.creaditLimit,
+      required this.interestAmount,
+      required this.dueAmount});
 
   factory orderDetailedResponse.fromJson(Map<String, dynamic> json) {
     return orderDetailedResponse(
-      error: json['error'] ?? false,
-      message: json['message'] ?? '',
-      data: (json['data']['order_details'] as List)
-          .map((i) => orderDetails.fromJson(i))
-          .toList(),
-      transactionDetails: (json['data']['tranction_details'] as List)
-          .map((i) => TransactionDetails.fromJson(i))
-          .toList(),
-    );
+        error: json['error'] ?? false,
+        message: json['message'] ?? '',
+        data: (json['data']['order_details'] as List)
+            .map((i) => orderDetails.fromJson(i))
+            .toList(),
+        transactionDetails: (json['data']['tranction_details'] as List)
+            .map((i) => TransactionDetails.fromJson(i))
+            .toList(),
+        creaditLimit: json['data']['creaditLimit'] ?? 0,
+        dueAmount: json['data']['dueAmount'] ?? 0,
+        interestAmount: json['data']['intrestAmount'] ?? 0);
   }
 }
 
@@ -82,7 +89,7 @@ class orderDetails {
       price: json['price'] ?? '',
       userId: json['user_id'] ?? '',
       shippingType: json['shipping_type'] ?? '',
-      shippingCharge: json['shipping_charge'] ?? '',
+      shippingCharge: json['shipping_charge'] ?? '0',
       orderId: json['order_id'] ?? '',
       addressId: json['address_id'] ?? '',
       paymentMode: json['payment_mode'] ?? '',

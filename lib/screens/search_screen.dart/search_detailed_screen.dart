@@ -19,10 +19,12 @@ class search_detailed_screen extends StatefulWidget {
       {super.key,
       required this.product_data,
       required this.order_data,
-      required this.user});
+      required this.user,
+      required this.var_id});
   final searchProductData product_data;
   final Order order_data;
   final String user;
+  final String var_id;
   @override
   State<search_detailed_screen> createState() => _search_detailed_screenState();
 }
@@ -37,11 +39,18 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
   @override
   void initState() {
     super.initState();
-    futureProductResponse = single_product_api().single_product_details(
-        user_id: widget.order_data.userId,
-        product_id: widget.product_data.productId);
-    futureVariationResponse = variation_api().variation_details(
-        user_id: widget.order_data.userId, variation_id: variation_id);
+    futureProductResponse = single_product_api()
+        .single_product_details(
+            user_id: widget.order_data.userId,
+            product_id: widget.product_data.productId)
+        .then((value) {
+      futureVariationResponse = variation_api().variation_details(
+          user_id: widget.user,
+          variation_id: value.messages.status.attributes.isEmpty
+              ? variation_id
+              : value.messages.status.attributes[0].variations[0].variationId);
+      return value;
+    });
   }
 
   Future<void> _refreshvariant() async {

@@ -18,6 +18,7 @@ class _PaymentPollState extends State<payment_poll> {
       _selectedIndex = index + 1;
       final_mode_pay = _selectedIndex;
       _selectedOption = option;
+      print(final_mode_pay);
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('You selected: $option')),
@@ -27,29 +28,26 @@ class _PaymentPollState extends State<payment_poll> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            PollOption(
-              title: 'Cash On Dellivery',
-              isSelected: _selectedIndex == 1,
-              onTap: () => _selectOption(0, 'Cash'),
-            ),
-            PollOption(
-              title: 'Credit',
-              isSelected: _selectedIndex == 3,
-              onTap: () => _selectOption(2, 'Credit'),
-            ),
-            // PollOption(
-            //   title: 'Pay later',
-            //   isSelected: _selectedIndex == 2,
-            //   onTap: () => _selectOption(2, 'Pay later'),
-            // ),
-            SizedBox(height: 20),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          PollOption(
+            title: 'Cash On Delivery',
+            isSelected: _selectedIndex == 1,
+            onTap: () => _selectOption(0, 'Cash'),
+          ),
+          PollOption(
+            title: 'Credit',
+            isSelected: _selectedIndex == 3,
+            onTap: () => _selectOption(2, 'Credit'),
+          ),
+          // PollOption(
+          //   title: 'Pay later',
+          //   isSelected: _selectedIndex == 2,
+          //   onTap: () => _selectOption(2, 'Pay later'),
+          // ),
+          SizedBox(height: 20),
+        ],
       ),
     );
   }
@@ -72,7 +70,7 @@ class PollOption extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 10),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(10),

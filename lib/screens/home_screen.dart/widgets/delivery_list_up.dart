@@ -25,8 +25,8 @@ class _delivery_list_upState extends State<delivery_list_up> {
   var deliveryCharges = 0;
   @override
   void initState() {
-    orderDetailedresponse =
-        order_detailed_api().order_detailed(order_id: widget.order.orderId);
+    orderDetailedresponse = order_detailed_api().order_detailed(
+        order_id: widget.order.orderId, user_id: widget.order.userId);
     super.initState();
   }
 

@@ -13,6 +13,7 @@ import 'package:sm_delivery/models/order_response.dart';
 import 'package:sm_delivery/models/single_product_response.dart';
 import 'package:sm_delivery/navbar.dart';
 import 'package:sm_delivery/screens/delivery_detailed_screen/widgets/payment_poll.dart';
+import 'package:sm_delivery/screens/delivery_detailed_screen/widgets/payment_status.dart';
 import 'package:sm_delivery/screens/search_screen.dart/search_screen.dart';
 import '../../api/variation.dart';
 import '../../components/basic_text.dart';
@@ -34,6 +35,7 @@ class delivery_detailed_screen extends StatefulWidget {
 class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
   late Future<orderDetailedResponse> orderDetailedresponse;
   late Future<List<UserProductResponse>> savedcartDetailedresponse;
+  final TextEditingController _cashController = TextEditingController();
 
   Set<int> updateIndices = {};
   int new_quan = 1;
@@ -71,8 +73,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     if (!mounted) return;
 
     setState(() {
-      orderDetailedresponse = order_detailed_api()
-          .order_detailed(order_id: widget.orderresponse.orderId);
+      orderDetailedresponse = order_detailed_api().order_detailed(
+          order_id: widget.orderresponse.orderId,
+          user_id: widget.orderresponse.userId);
       savedcartDetailedresponse = SharedPreferencesService()
           .getUserProductResponses(
               widget.orderresponse.userId, widget.orderresponse.orderId);
@@ -151,8 +154,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     if (result == true) {
       widget.orderresponse.status == 5
           ? setState(() {
-              orderDetailedresponse = order_detailed_api()
-                  .order_detailed(order_id: widget.orderresponse.orderId);
+              orderDetailedresponse = order_detailed_api().order_detailed(
+                  order_id: widget.orderresponse.orderId,
+                  user_id: widget.orderresponse.userId);
               savedcartDetailedresponse = SharedPreferencesService()
                   .getUserProductResponses(widget.orderresponse.userId,
                       widget.orderresponse.orderId);
@@ -166,8 +170,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
   @override
   void initState() {
     _refreshOrder();
-    orderDetailedresponse = order_detailed_api()
-        .order_detailed(order_id: widget.orderresponse.orderId);
+    orderDetailedresponse = order_detailed_api().order_detailed(
+        order_id: widget.orderresponse.orderId,
+        user_id: widget.orderresponse.userId);
     super.initState();
   }
 
@@ -258,9 +263,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     return total;
   }
 
-  int calculateTotalPrice(List<orderDetails> cartItems,
+  num calculateTotalPrice(List<orderDetails> cartItems,
       List<UserProductResponse> savedcartDetaileddata) {
-    int total = 0;
+    num total = 0;
     // for (var item in cartItems) {
     //   print("item price fhebh: ${item.price}, quantity: ${item.qty}");
 
@@ -279,7 +284,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
       try {
         final price = double.tryParse(item.price) ?? 0.0;
         if (price > 0 && item.qty > 0) {
-          total += (price * item.qty).toInt();
+          total += (price * item.qty);
           print('Total2: $total');
         } else {}
       } catch (e) {}
@@ -287,18 +292,17 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     return total;
   }
 
-  int calculateTotalCompletedPrice(List<orderDetails> cartItems) {
-    int total = 0;
+  num calculateTotalCompletedPrice(List<orderDetails> cartItems) {
+    num total = 0;
     for (var item in cartItems) {
       print("item price fhebh: ${item.price}, quantity: ${item.qty}");
 
       try {
         final price = double.tryParse(item.price) ?? 0.0;
         final quantity = int.tryParse(item.qty) ?? 0;
-        final couponAmount = int.tryParse(item.couponAmount) ?? 0;
 
         if (price > 0 && quantity > 0) {
-          total += (price * quantity).toInt();
+          total += (price * quantity);
           print('Total: $total');
         } else {}
       } catch (e) {}
@@ -306,9 +310,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     return total;
   }
 
-  int calculateTotal(List<orderDetails> cartItems,
+  num calculateTotal(List<orderDetails> cartItems,
       List<UserProductResponse> savedcartDetaileddata) {
-    int total = 0;
+    num total = 0;
 
     // for (var item in cartItems) {
     //   try {
@@ -327,7 +331,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
         final price = double.tryParse(item.price) ?? 0.0;
         final quantity = item.qty;
         if (price > 0 && quantity > 0) {
-          total += (price * quantity).toInt();
+          total += (price * quantity);
         } else {}
       } catch (e) {}
     }
@@ -339,32 +343,38 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     return total;
   }
 
-  int calculateTotalCompleted(List<orderDetails> cartItems,
+  num calculateTotalCompleted(List<orderDetails> cartItems,
       List<UserProductResponse> savedcartDetaileddata) {
-    int total = 0;
+    num total = 0;
 
     for (var item in cartItems) {
       try {
-        final price = double.tryParse(item.price) ?? 0.0;
-        final quantity = int.tryParse(item.qty) ?? 0;
-        final couponAmount = int.tryParse(item.couponAmount) ?? 0;
+        final price = double.parse(item.price) ?? 0.0;
+        final quantity = int.parse(item.qty) ?? 0;
+        final couponAmount = int.parse(item.couponAmount) ?? 0;
 
         if (price > 0 && quantity > 0) {
-          total += (price * quantity).toInt();
+          total += (price * quantity);
         } else {}
       } catch (e) {}
     }
 
-    final couponAmount = int.tryParse(cartItems[0].couponAmount) ?? 0;
+    final couponAmount = double.parse(cartItems[0].couponAmount) ?? 0;
     total = total - couponAmount;
 
     print('Final total after applying coupon: $total');
     return total;
   }
 
-  int finalPrice(int actualPrice) {
-    int finalPrice = 0;
-    finalPrice = finalPrice + deliveryCharges + actualPrice;
+  num finalPrice(num actualPrice, String deliveryCharges, String oldcredit,
+      String intrestamount) {
+    num finalPrice = 0;
+    final shipping =
+        double.parse(deliveryCharges == '' ? '0' : deliveryCharges);
+    final credit = double.parse(oldcredit == '' ? '0' : oldcredit);
+    final intrest = double.parse(intrestamount == '' ? '0' : intrestamount);
+    finalPrice = finalPrice + shipping + actualPrice + credit + intrest;
+    print('final Price:${finalPrice}');
     return finalPrice;
   }
 
@@ -803,14 +813,6 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                               overflow: TextOverflow.clip),
                                                                         ),
                                                                       ),
-                                                                      ElevatedButton(
-                                                                          onPressed:
-                                                                              () {
-                                                                            getProductNameList(orderDetails.data,
-                                                                                filterData);
-                                                                          },
-                                                                          child:
-                                                                              Text('data')),
                                                                       widget.orderresponse.status ==
                                                                               '5'
                                                                           ? Text(
@@ -870,7 +872,9 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                             ),
                                                                             TextButton(
                                                                                 onPressed: () async {
-                                                                                  await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) => _refreshOrder());
+                                                                                  await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
+                                                                                    _refreshOrder();
+                                                                                  });
                                                                                 },
                                                                                 child: Text('Delete', style: TextStyle(color: Colors.red, fontSize: 14))),
                                                                           ],
@@ -887,66 +891,43 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                     )
                                                   ]))),
 
-                                        widget.orderresponse.status == '5'
-                                            ? Container()
-                                            : Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    basic_text(
-                                                        title: 'Payment Mode',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleSmall!
-                                                            .copyWith(
-                                                                color: AppColors
-                                                                    .primarycolor2,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600)),
-                                                    // Container(
-                                                    //   margin: EdgeInsets.symmetric(
-                                                    //       vertical: 10),
-                                                    //   padding: EdgeInsets.all(16),
-                                                    //   decoration: BoxDecoration(
-                                                    //     color: Colors.grey[200],
-                                                    //     borderRadius:
-                                                    //         BorderRadius.circular(10),
-                                                    //     border: Border.all(
-                                                    //         color: Colors.grey),
-                                                    //   ),
-                                                    //   child: Row(
-                                                    //     children: [
-                                                    //       CircleAvatar(
-                                                    //         radius: 10,
-                                                    //         backgroundColor:
-                                                    //             Colors.grey,
-                                                    //         child: CircleAvatar(
-                                                    //           radius: 6,
-                                                    //           backgroundColor:
-                                                    //               Colors.black,
-                                                    //         ),
-                                                    //       ),
-                                                    //       SizedBox(width: 10),
-                                                    //       Text(
-                                                    //         orderDetails.data[0]
-                                                    //                     .paymentMode ==
-                                                    //                 '1'
-                                                    //             ? 'Cash on Delivery'
-                                                    //             : 'Online Payment',
-                                                    //         style: TextStyle(
-                                                    //             fontSize: 16),
-                                                    //       ),
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
-                                                    payment_poll(),
-                                                  ],
-                                                ),
-                                              ),
+                                        // widget.orderresponse.status == '5'
+                                        //     ? Container()
+                                        //     : Padding(
+                                        //         padding: const EdgeInsets.all(8.0),
+                                        //         child: Column(
+                                        //           crossAxisAlignment:
+                                        //               CrossAxisAlignment.start,
+                                        //           children: [
+                                        //             basic_text(
+                                        //                 title: 'Payment Mode',
+                                        //                 style: Theme.of(context)
+                                        //                     .textTheme
+                                        //                     .titleSmall!
+                                        //                     .copyWith(
+                                        //                         color: AppColors
+                                        //                             .primarycolor2,
+                                        //                         fontWeight:
+                                        //                             FontWeight.w600)),
+                                        //             payment_poll(),
+                                        //             Container(
+                                        //               width: MediaQuery.of(context)
+                                        //                       .size
+                                        //                       .width *
+                                        //                   0.6,
+                                        //               child: text_box(
+                                        //                   value: _cashController,
+                                        //                   height: MediaQuery.of(context)
+                                        //                           .size
+                                        //                           .height *
+                                        //                       0.06,
+                                        //                   title: '',
+                                        //                   hint: 'Enter Cash Collected',
+                                        //                   obsureText: false),
+                                        //             ),
+                                        //           ],
+                                        //         ),
+                                        //       ),
                                         widget.orderresponse.deliveryAddress
                                                 .isEmpty
                                             ? Container()
@@ -1123,7 +1104,8 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                 calculateTotalCompletedPrice(
                                                                   orderDetails
                                                                       .data,
-                                                                ).toString(),
+                                                                ).toStringAsFixed(
+                                                                    2),
                                                             style: Theme.of(
                                                                     context)
                                                                 .textTheme
@@ -1150,117 +1132,78 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                   ],
                                                 ),
                                                 SizedBox(height: 10),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title: 'Coupon Discount',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    basic_text(
-                                                      title:
-                                                          '-₹${orderDetails.data[0].couponAmount}',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.green),
-                                                    ),
-                                                  ],
-                                                ),
+                                                price_element(
+                                                    context,
+                                                    'Coupon Discount',
+                                                    double.parse(orderDetails
+                                                            .data[0]
+                                                            .couponAmount)
+                                                        .toStringAsFixed(2),
+                                                    Colors.green),
                                                 SizedBox(height: 10),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title: 'Delivery Charges',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    basic_text(
-                                                      title: '₹' +
-                                                          deliveryCharges
-                                                              .toString(),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                  ],
-                                                ),
+                                                price_element(
+                                                    context,
+                                                    'Delivery Charges',
+                                                    '${orderDetails.data[0].shippingCharge != '' ? double.parse(orderDetails.data[0].shippingCharge!).toStringAsFixed(2) : 0.00}',
+                                                    Colors.black),
                                                 Divider(),
-                                                SizedBox(height: 0),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title: 'Total Amount',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    widget.orderresponse
-                                                                .status ==
-                                                            '5'
-                                                        ? basic_text(
-                                                            title: '₹' +
-                                                                finalPrice(calculateTotalCompleted(
-                                                                        orderDetails
-                                                                            .data,
-                                                                        filterData))
+                                                price_element(
+                                                    context,
+                                                    'Credit Amount',
+                                                    '${orderDetails.dueAmount != '' ? orderDetails.dueAmount.toStringAsFixed(2) : 0.00}',
+                                                    Colors.black),
+                                                price_element(
+                                                    context,
+                                                    'Intrest Amount',
+                                                    '${orderDetails.interestAmount != '' ? orderDetails.interestAmount.toStringAsFixed(2) : 0}',
+                                                    Colors.black),
+                                                Divider(),
+                                                widget.orderresponse.status ==
+                                                        '5'
+                                                    ? price_element(
+                                                        context,
+                                                        'Total Amount',
+                                                        finalPrice(
+                                                                calculateTotalCompleted(
+                                                                    orderDetails
+                                                                        .data,
+                                                                    filterData),
+                                                                orderDetails
+                                                                            .data[
+                                                                                0]
+                                                                            .shippingCharge !=
+                                                                        null
+                                                                    ? orderDetails
+                                                                        .data[0]
+                                                                        .shippingCharge!
+                                                                    : '0.0',
+                                                                orderDetails
+                                                                    .dueAmount
                                                                     .toString(),
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyLarge!
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                          )
-                                                        : basic_text(
-                                                            title: '₹' +
-                                                                finalPrice(calculateTotal(
-                                                                        orderDetails
-                                                                            .data,
-                                                                        filterData))
+                                                                orderDetails
+                                                                    .interestAmount
+                                                                    .toString())
+                                                            .toString(),
+                                                        Colors.black)
+                                                    : price_element(
+                                                        context,
+                                                        'Total Amount',
+                                                        finalPrice(
+                                                                calculateTotal(
+                                                                    orderDetails
+                                                                        .data,
+                                                                    filterData),
+                                                                orderDetails
+                                                                    .data[0]
+                                                                    .shippingCharge!,
+                                                                orderDetails
+                                                                    .dueAmount
                                                                     .toString(),
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyLarge!
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                          ),
-                                                  ],
-                                                ),
+                                                                orderDetails
+                                                                    .interestAmount
+                                                                    .toString())
+                                                            .toStringAsFixed(2),
+                                                        Colors.black),
                                                 Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
@@ -1279,7 +1222,8 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                       title: '₹' +
                                                           paidAmount(orderDetails
                                                                   .transactionDetails)
-                                                              .toString(),
+                                                              .toStringAsFixed(
+                                                                  2),
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .bodyLarge!
@@ -1292,41 +1236,39 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                     ),
                                                   ],
                                                 ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title: 'Credit Amount',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    basic_text(
-                                                      title: '₹' +
-                                                          (finalPrice(calculateTotal(
-                                                                      orderDetails
-                                                                          .data,
-                                                                      filterData)) -
-                                                                  paidAmount(
-                                                                      orderDetails
-                                                                          .transactionDetails))
-                                                              .toString(),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color: Colors.red,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
-                                                    ),
-                                                  ],
-                                                ),
+                                                // Row(
+                                                //   mainAxisAlignment:
+                                                //       MainAxisAlignment.spaceBetween,
+                                                //   children: [
+                                                //     basic_text(
+                                                //       title: 'Credit Amount',
+                                                //       style: Theme.of(context)
+                                                //           .textTheme
+                                                //           .bodyLarge!
+                                                //           .copyWith(color: Colors.black),
+                                                //     ),
+                                                //     basic_text(
+                                                //       title: '₹' +
+                                                //           (finalPrice(
+                                                //                       calculateTotal(
+                                                //                           orderDetails
+                                                //                               .data,
+                                                //                           filterData),
+                                                //                       orderDetails.data[0]
+                                                //                           .shippingCharge!) -
+                                                //                   paidAmount(orderDetails
+                                                //                       .transactionDetails))
+                                                //               .toString(),
+                                                //       style: Theme.of(context)
+                                                //           .textTheme
+                                                //           .bodyLarge!
+                                                //           .copyWith(
+                                                //               color: Colors.red,
+                                                //               fontWeight:
+                                                //                   FontWeight.w400),
+                                                //     ),
+                                                //   ],
+                                                // ),
                                               ],
                                             ),
                                           ),
@@ -1421,104 +1363,119 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.red),
-                                                  onPressed: () async {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return AlertDialog(
-                                                            title: Text(
-                                                                'Cancel Your Delivery'),
-                                                            content: Text(
-                                                                'Are you sure you want to cancel the delivery?'),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                child:
-                                                                    Text('No'),
-                                                              ),
-                                                              TextButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  final result = await order_delivery_status_api().order_delivery_status(
-                                                                      orderid: widget
-                                                                          .orderresponse
-                                                                          .orderId,
-                                                                      status:
-                                                                          '3');
-                                                                  if (result
-                                                                          .messages
-                                                                          .status ==
-                                                                      'Order Deliverey Succesfully') {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  }
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                child:
-                                                                    Text('Yes'),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        });
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 14),
-                                                    child: basic_text(
-                                                        title: 'Cancel',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1!
-                                                            .copyWith(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500)),
-                                                  )),
+                                              // ElevatedButton(
+                                              //     style:
+                                              //         ElevatedButton.styleFrom(
+                                              //             backgroundColor:
+                                              //                 Colors.red),
+                                              //     onPressed: () async {
+                                              //       showDialog(
+                                              //           context: context,
+                                              //           builder: (context) {
+                                              //             return AlertDialog(
+                                              //               title: Text(
+                                              //                   'Cancel Your Delivery'),
+                                              //               content: Text(
+                                              //                   'Are you sure you want to cancel the delivery?'),
+                                              //               actions: [
+                                              //                 TextButton(
+                                              //                   onPressed: () {
+                                              //                     Navigator.pop(
+                                              //                         context);
+                                              //                   },
+                                              //                   child:
+                                              //                       Text('No'),
+                                              //                 ),
+                                              //                 TextButton(
+                                              //                   onPressed:
+                                              //                       () async {
+                                              //                     final result = await order_delivery_status_api().order_delivery_status(
+                                              //                         orderid: widget
+                                              //                             .orderresponse
+                                              //                             .orderId,
+                                              //                         status:
+                                              //                             '3');
+                                              //                     if (result
+                                              //                             .messages
+                                              //                             .status ==
+                                              //                         'Order Deliverey Succesfully') {
+                                              //                       Navigator.pop(
+                                              //                           context);
+                                              //                     }
+                                              //                     Navigator.pop(
+                                              //                         context);
+                                              //                   },
+                                              //                   child:
+                                              //                       Text('Yes'),
+                                              //                 ),
+                                              //               ],
+                                              //             );
+                                              //           });
+                                              //     },
+                                              //     child: Padding(
+                                              //       padding: const EdgeInsets
+                                              //           .symmetric(
+                                              //           horizontal: 14),
+                                              //       child: basic_text(
+                                              //           title: 'Cancel',
+                                              //           style: Theme.of(context)
+                                              //               .textTheme
+                                              //               .bodyText1!
+                                              //               .copyWith(
+                                              //                   color: Colors
+                                              //                       .white,
+                                              //                   fontWeight:
+                                              //                       FontWeight
+                                              //                           .w500)),
+                                              //     )),
                                               ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
+                                                      minimumSize: Size(
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.7,
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.05),
                                                       backgroundColor: AppColors
                                                           .primarycolor2),
                                                   onPressed: () async {
-                                                    print(final_mode_pay);
-                                                    if (final_mode_pay == 3) {
-                                                      showPaidAmountDialog(
-                                                          context,
-                                                          orderDetails,
-                                                          filterData);
-                                                    } else if (final_mode_pay ==
-                                                        1) {
-                                                      showCashConfirm(
-                                                          context,
-                                                          orderDetails,
-                                                          filterData);
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(SnackBar(
-                                                              backgroundColor:
-                                                                  Colors.red,
-                                                              content: Text(
-                                                                  'Please select payment mode')));
-                                                    }
+                                                    // if (final_mode_pay == 3) {
+                                                    showPaidAmountDialog(
+                                                        context,
+                                                        orderDetails,
+                                                        filterData,
+                                                        orderDetails.data[0]
+                                                            .shippingCharge!,
+                                                        orderDetails.dueAmount
+                                                            .toString(),
+                                                        orderDetails
+                                                            .interestAmount
+                                                            .toString());
+                                                    // } else if (final_mode_pay ==
+                                                    //     1) {
+                                                    //   showCashConfirm(
+                                                    //       context,
+                                                    //       orderDetails,
+                                                    //       filterData);
+                                                    // } else {
+                                                    //   ScaffoldMessenger.of(
+                                                    //           context)
+                                                    //       .showSnackBar(SnackBar(
+                                                    //           backgroundColor:
+                                                    //               Colors.red,
+                                                    //           content: Text(
+                                                    //               'Please select payment mode')));
+                                                    // }
                                                   },
                                                   child: Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 14),
                                                     child: basic_text(
-                                                        title: 'Confirm',
+                                                        title: 'Submit',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyText1!
@@ -1537,6 +1494,26 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                 }
               }),
         ));
+  }
+
+  Row price_element(
+      BuildContext context, String title, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        basic_text(
+          title: title,
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(color: Colors.black),
+        ),
+        basic_text(
+          title: '₹${value}',
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: color),
+        ),
+      ],
+    );
   }
 
   Future<dynamic> showCashConfirm(
@@ -1558,41 +1535,57 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
               ),
               TextButton(
                 onPressed: () async {
-                  final result = await checkout_api().checkout(
-                      user_id: widget.orderresponse.userId,
-                      vendor_id: widget.userDetails.messages.status.userId,
-                      coupon_code: widget.orderresponse.couponCode,
-                      cupon_price:
-                          double.tryParse(widget.orderresponse.couponAmnt) ?? 0,
-                      order_id: widget.orderresponse.orderId,
-                      paymentmode: widget.orderresponse.paymentMode,
-                      paid_amount: (finalPrice(
-                              calculateTotal(orderDetails.data, filterData)) -
-                          paidAmount(orderDetails.transactionDetails)),
-                      transaction_id: '',
-                      product_name:
-                          getProductNameList(orderDetails.data, filterData),
-                      qty: getProductqty(orderDetails.data, filterData),
-                      product_image:
-                          getProductImgList(orderDetails.data, filterData),
-                      sale_price:
-                          getProductPrice(orderDetails.data, filterData),
-                      variation_id:
-                          getProductVar(orderDetails.data, filterData));
-                  if (result.messages.status ==
-                      'Your Order Placed Successfully') {
-                    await SharedPreferencesService()
-                        .removeItemsByOrderId(widget.orderresponse.orderId,
-                            widget.orderresponse.userId)
-                        .then((value) {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navbar(
-                                    userDetail: widget.userDetails,
-                                  )),
-                          (route) => false);
-                    });
+                  final userStatus vendorStatus =
+                      widget.userDetails.messages.status;
+                  if (_cashController.text.isNotEmpty) {
+                    final num intrest_amount_paid =
+                        double.parse(_cashController.text) -
+                            calculateTotalCompletedPrice(
+                              orderDetails.data,
+                            );
+                    print(intrest_amount_paid);
+                    final result = await checkout_api().checkout(
+                        user_id: widget.orderresponse.userId,
+                        vendor_id: vendorStatus.userId,
+                        coupon_code: widget.orderresponse.couponCode,
+                        cupon_price:
+                            double.tryParse(widget.orderresponse.couponAmnt) ??
+                                0,
+                        order_id: widget.orderresponse.orderId,
+                        paymentmode: widget.orderresponse.paymentMode,
+                        paid_amount: double.parse(_cashController.text),
+                        transaction_id: '',
+                        product_name:
+                            getProductNameList(orderDetails.data, filterData),
+                        qty: getProductqty(orderDetails.data, filterData),
+                        product_image:
+                            getProductImgList(orderDetails.data, filterData),
+                        sale_price:
+                            getProductPrice(orderDetails.data, filterData),
+                        variation_id:
+                            getProductVar(orderDetails.data, filterData),
+                        paid_intrest: intrest_amount_paid <= 0
+                            ? '0'
+                            : intrest_amount_paid.toString());
+                    if (result.messages.status ==
+                        'Your Order Placed Successfully') {
+                      await SharedPreferencesService()
+                          .removeItemsByOrderId(widget.orderresponse.orderId,
+                              widget.orderresponse.userId)
+                          .then((value) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => navbar(
+                                      userDetail: widget.userDetails,
+                                    )),
+                            (route) => false);
+                      });
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.yellow,
+                        content: Text('Please enter collected cash Amount')));
                   }
                 },
                 child: Text('Yes'),
@@ -1602,10 +1595,14 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
         });
   }
 
+//Real Box
   void showPaidAmountDialog(
       BuildContext context,
       orderDetailedResponse orderDetails,
-      List<UserProductResponse> filterData) {
+      List<UserProductResponse> filterData,
+      String deliveryCharges,
+      String oldcredit,
+      String intrestamount) {
     double _rating = 0.0;
     TextEditingController _reviewController = TextEditingController();
 
@@ -1617,10 +1614,19 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
               style: TextStyle(
                   fontFamily: 'Roboto',
                   color: Colors.black,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              basic_text(
+                  title:
+                      'Total Amount: ${finalPrice(calculateTotal(orderDetails.data, filterData), deliveryCharges, oldcredit, intrestamount)}',
+                  style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500)),
+              SizedBox(height: 10),
               text_box(
                 value: _reviewController,
                 title: 'Username',
@@ -1656,8 +1662,15 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
               ),
               onPressed: () async {
                 final input_amount = calculateCredit(
-                    calculateTotal(orderDetails.data, filterData).toDouble(),
+                    finalPrice(calculateTotal(orderDetails.data, filterData),
+                            deliveryCharges, oldcredit, intrestamount)
+                        .toDouble(),
                     double.parse(_reviewController.text));
+                final num intrest_amount_paid =
+                    double.parse(_reviewController.text) -
+                        calculateTotalCompletedPrice(
+                          orderDetails.data,
+                        );
                 print('Input Amount: ${input_amount}');
                 if (input_amount < 0) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1684,7 +1697,10 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                       sale_price:
                           getProductPrice(orderDetails.data, filterData),
                       variation_id:
-                          getProductVar(orderDetails.data, filterData));
+                          getProductVar(orderDetails.data, filterData),
+                      paid_intrest: intrest_amount_paid <= 0
+                          ? '0'
+                          : intrest_amount_paid.toString());
                   if (result.messages.status ==
                       'Your Order Placed Successfully') {
                     await SharedPreferencesService()

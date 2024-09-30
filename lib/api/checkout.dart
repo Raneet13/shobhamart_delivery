@@ -19,6 +19,7 @@ class checkout_api {
     required List<String> product_image,
     required List<num> sale_price,
     required List<int> variation_id,
+    required String paid_intrest,
   }) async {
     var uri = Uri.parse('$base_url/API/deliveryboycheckout');
 
@@ -36,6 +37,7 @@ class checkout_api {
       'product_image': product_image,
       'sale_price': sale_price,
       'variation_id': variation_id,
+      'paid_intrest': paid_intrest
     };
 
     final response = await http.post(
