@@ -20,7 +20,7 @@ class forgotPasswordResponse {
 
 class forgotPasswordMessages {
   final String responsecode;
-  final forgotPasswordStatus status;
+  final dynamic status;
 
   forgotPasswordMessages({
     required this.responsecode,
@@ -28,9 +28,19 @@ class forgotPasswordMessages {
   });
 
   factory forgotPasswordMessages.fromJson(Map<String, dynamic> json) {
+    var statusData = json['status'];
+    dynamic status;
+
+    if (statusData is Map<String, dynamic>) {
+      status = forgotPasswordStatus.fromJson(statusData);
+      // status = statusData;
+    } else {
+      status = 'Contact No  not found';
+    }
+
     return forgotPasswordMessages(
       responsecode: json['responsecode'] ?? '',
-      status: forgotPasswordStatus.fromJson(json['status'] ?? {}),
+      status: status,
     );
   }
 }

@@ -2,8 +2,8 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 import 'package:sm_delivery/api/checkout.dart';
-import 'package:sm_delivery/api/order_delivery_status.dart';
 import 'package:sm_delivery/api/order_details.dart';
 import 'package:sm_delivery/api/update_quantity.dart';
 import 'package:sm_delivery/constants.dart/constants.dart';
@@ -12,8 +12,6 @@ import 'package:sm_delivery/models/login_details/user_detail.dart';
 import 'package:sm_delivery/models/order_response.dart';
 import 'package:sm_delivery/models/single_product_response.dart';
 import 'package:sm_delivery/navbar.dart';
-import 'package:sm_delivery/screens/delivery_detailed_screen/widgets/payment_poll.dart';
-import 'package:sm_delivery/screens/delivery_detailed_screen/widgets/payment_status.dart';
 import 'package:sm_delivery/screens/search_screen.dart/search_screen.dart';
 import '../../api/variation.dart';
 import '../../components/basic_text.dart';
@@ -36,6 +34,8 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
   late Future<orderDetailedResponse> orderDetailedresponse;
   late Future<List<UserProductResponse>> savedcartDetailedresponse;
   final TextEditingController _cashController = TextEditingController();
+  final TextEditingController _controllers = TextEditingController();
+  late final FocusNode focusNode;
 
   Set<int> updateIndices = {};
   int new_quan = 1;
@@ -169,6 +169,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
 
   @override
   void initState() {
+    focusNode = FocusNode();
     _refreshOrder();
     orderDetailedresponse = order_detailed_api().order_detailed(
         order_id: widget.orderresponse.orderId,
@@ -388,6 +389,22 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
 
   @override
   Widget build(BuildContext context) {
+    const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
+    const fillColor = Color.fromRGBO(243, 246, 249, 0);
+    const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
+
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: const TextStyle(
+        fontSize: 22,
+        color: Color.fromRGBO(30, 60, 87, 1),
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(19),
+        border: Border.all(color: borderColor),
+      ),
+    );
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -1609,6 +1626,22 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        const focusedBorderColor = Color.fromRGBO(23, 171, 144, 1);
+        const fillColor = Color.fromRGBO(243, 246, 249, 0);
+        const borderColor = Color.fromRGBO(23, 171, 144, 0.4);
+
+        final defaultPinTheme = PinTheme(
+          width: 56,
+          height: 56,
+          textStyle: const TextStyle(
+            fontSize: 22,
+            color: Color.fromRGBO(30, 60, 87, 1),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(19),
+            border: Border.all(color: borderColor),
+          ),
+        );
         return AlertDialog(
           title: Text('Confirm Your Paid Amount',
               style: TextStyle(
@@ -1639,6 +1672,62 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                   }
                   return null;
                 },
+              ),
+              SizedBox(height: 10),
+              Text('Enter Delivery OTP'),
+              Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Pinput(
+                  length: 6,
+                  controller: _controllers,
+                  focusNode: focusNode,
+                  defaultPinTheme: defaultPinTheme,
+                  separatorBuilder: (index) => const SizedBox(width: 12),
+                  validator: (input) {
+                    if (input!.length < 6) {
+                      return 'Enter 6 digit OTP';
+                    }
+                    return null;
+                  },
+                  hapticFeedbackType: HapticFeedbackType.lightImpact,
+                  onCompleted: (pin) {
+                    debugPrint('onCompleted: $pin');
+                  },
+                  onChanged: (value) {
+                    debugPrint('onChanged: $value');
+                  },
+                  cursor: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 9),
+                        width: 22,
+                        height: 1,
+                        color: focusedBorderColor,
+                      ),
+                    ],
+                  ),
+                  focusedPinTheme: defaultPinTheme.copyWith(
+                    decoration: defaultPinTheme.decoration!.copyWith(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: focusedBorderColor),
+                    ),
+                  ),
+                  submittedPinTheme: defaultPinTheme.copyWith(
+                    decoration: defaultPinTheme.decoration!.copyWith(
+                      color: fillColor,
+                      borderRadius: BorderRadius.circular(19),
+                      border: Border.all(color: focusedBorderColor),
+                    ),
+                  ),
+                  errorPinTheme: defaultPinTheme.copyBorderWith(
+                    border: Border.all(color: Colors.redAccent),
+                  ),
+                ),
               ),
             ],
           ),
@@ -1679,42 +1768,49 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                       backgroundColor: Colors.red));
                   return;
                 } else {
-                  final result = await checkout_api().checkout(
-                      user_id: widget.orderresponse.userId,
-                      vendor_id: widget.userDetails.messages.status.userId,
-                      coupon_code: widget.orderresponse.couponCode,
-                      cupon_price:
-                          double.tryParse(widget.orderresponse.couponAmnt) ?? 0,
-                      order_id: widget.orderresponse.orderId,
-                      paymentmode: widget.orderresponse.paymentMode,
-                      paid_amount: double.parse(_reviewController.text),
-                      transaction_id: '',
-                      product_name:
-                          getProductNameList(orderDetails.data, filterData),
-                      qty: getProductqty(orderDetails.data, filterData),
-                      product_image:
-                          getProductImgList(orderDetails.data, filterData),
-                      sale_price:
-                          getProductPrice(orderDetails.data, filterData),
-                      variation_id:
-                          getProductVar(orderDetails.data, filterData),
-                      paid_intrest: intrest_amount_paid <= 0
-                          ? '0'
-                          : intrest_amount_paid.toString());
-                  if (result.messages.status ==
-                      'Your Order Placed Successfully') {
-                    await SharedPreferencesService()
-                        .removeItemsByOrderId(widget.orderresponse.orderId,
-                            widget.orderresponse.userId)
-                        .then((value) {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => navbar(
-                                    userDetail: widget.userDetails,
-                                  )),
-                          (route) => false);
-                    });
+                  if (_controllers.text == orderDetails.data[0].OTP) {
+                    final result = await checkout_api().checkout(
+                        user_id: widget.orderresponse.userId,
+                        vendor_id: widget.userDetails.messages.status.userId,
+                        coupon_code: widget.orderresponse.couponCode,
+                        cupon_price:
+                            double.tryParse(widget.orderresponse.couponAmnt) ??
+                                0,
+                        order_id: widget.orderresponse.orderId,
+                        paymentmode: widget.orderresponse.paymentMode,
+                        paid_amount: double.parse(_reviewController.text),
+                        transaction_id: '',
+                        product_name:
+                            getProductNameList(orderDetails.data, filterData),
+                        qty: getProductqty(orderDetails.data, filterData),
+                        product_image:
+                            getProductImgList(orderDetails.data, filterData),
+                        sale_price:
+                            getProductPrice(orderDetails.data, filterData),
+                        variation_id:
+                            getProductVar(orderDetails.data, filterData),
+                        paid_intrest: intrest_amount_paid <= 0
+                            ? '0'
+                            : intrest_amount_paid.toString());
+                    if (result.messages.status ==
+                        'Your Order Placed Successfully') {
+                      await SharedPreferencesService()
+                          .removeItemsByOrderId(widget.orderresponse.orderId,
+                              widget.orderresponse.userId)
+                          .then((value) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => navbar(
+                                      userDetail: widget.userDetails,
+                                    )),
+                            (route) => false);
+                      });
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Wrong OTP'),
+                        backgroundColor: Colors.red));
                   }
                 }
               },

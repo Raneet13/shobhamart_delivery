@@ -78,9 +78,10 @@ class _login_screenState extends State<login_screen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.network(
-                'https://seeklogo.com/images/J/jiomart-logo-DDF12BB25D-seeklogo.com.png',
+              Image.asset(
+                'assets/sobha logo blue.png',
                 height: MediaQuery.of(context).size.height * 0.15,
+                width: MediaQuery.of(context).size.width * 0.8,
               ),
               SizedBox(height: 32),
               TextFormField(
@@ -124,10 +125,10 @@ class _login_screenState extends State<login_screen> {
                           builder: (context) => forgot_password_screen()));
                     },
                     child: basic_text(
-                      title: 'Forgot Password',
+                      title: 'Forgot Password?',
                       style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            color: AppColors.primarycolor2,
-                            fontWeight: FontWeight.w600,
+                            color: AppColors.orangered,
+                            fontWeight: FontWeight.w500,
                           ),
                     ),
                   ),
@@ -136,7 +137,7 @@ class _login_screenState extends State<login_screen> {
               SizedBox(height: 32),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orangered,
+                  backgroundColor: AppColors.primarycolor2,
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

@@ -52,6 +52,7 @@ class orderDetails {
   final String? txnId;
   final String couponCode;
   final String couponAmount;
+  final String OTP;
   final String createdDate;
   final String updateDate;
 
@@ -75,6 +76,7 @@ class orderDetails {
     this.txnId,
     required this.couponCode,
     required this.couponAmount,
+    required this.OTP,
     required this.createdDate,
     required this.updateDate,
   });
@@ -100,6 +102,7 @@ class orderDetails {
       txnId: json['txn_id'] ?? '',
       couponCode: json['coupon_code'] ?? '',
       couponAmount: json['coupon_amnt'] ?? '',
+      OTP: json['OTP'] ?? '',
       createdDate: json['created_date'] ?? '',
       updateDate: json['update_date'] ?? '',
     );

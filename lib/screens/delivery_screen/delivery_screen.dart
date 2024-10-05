@@ -160,9 +160,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                           (getDistance(LatLng(widget.lat, widget.lng))
                               .toStringAsFixed(2)))
                       .toString()),
-              onTap: () {
-                print('market tapped');
-              },
+              onTap: () {},
             );
           });
           getDirection(LatLng(widget.lat, widget.lng));

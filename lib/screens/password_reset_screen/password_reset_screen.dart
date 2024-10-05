@@ -1,15 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:sm_delivery/api/login.dart';
 import 'package:sm_delivery/api/reset_password.dart';
-import 'package:sm_delivery/components/basic_text.dart';
 import 'package:sm_delivery/core/theme/base_color.dart';
 import 'package:sm_delivery/core/utils/shared_preference.dart';
-import 'package:sm_delivery/navbar.dart';
-import 'package:sm_delivery/screens/forgot_password_screen/forgot_password_screen.dart';
 import 'package:sm_delivery/screens/login_screen/login_screen.dart';
-import 'package:sm_delivery/screens/wrapper.dart';
 
 class password_reset_screen extends StatefulWidget {
   const password_reset_screen({Key? key, required this.contact_no})
@@ -70,16 +65,24 @@ class _password_reset_screenState extends State<password_reset_screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+          leading: IconButton(
+        icon: const Icon(Icons.arrow_back, size: 30, color: Colors.black),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      )),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.network(
-                'https://seeklogo.com/images/J/jiomart-logo-DDF12BB25D-seeklogo.com.png',
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              Image.asset(
+                'assets/sobha logo blue.png',
                 height: MediaQuery.of(context).size.height * 0.15,
+                width: MediaQuery.of(context).size.width * 0.8,
               ),
               SizedBox(height: 32),
               const Text(
@@ -130,7 +133,7 @@ class _password_reset_screenState extends State<password_reset_screen> {
               SizedBox(height: 32),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.orangered,
+                  backgroundColor: AppColors.primarycolor2,
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

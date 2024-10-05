@@ -98,13 +98,20 @@ class _otp_screenState extends State<otp_screen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
+      appBar: AppBar(
+          leading: IconButton(
+        icon: const Icon(Icons.arrow_back, size: 30, color: Colors.black),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      )),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               const Text(
                 'Shobamart',
                 style: TextStyle(
@@ -146,9 +153,11 @@ class _otp_screenState extends State<otp_screen> {
                             startTimer();
                             final result = await forgot_password_api()
                                 .forgot_password(contact_no: widget.contact_no);
-                            if (result.messages.status.otp.isNotEmpty) {
+                            forgotPasswordStatus otpstatus =
+                                result.messages.status;
+                            if (otpstatus.otp.isNotEmpty) {
                               setState(() {
-                                otp = result.messages.status.otp;
+                                otp = otpstatus.otp;
                               });
                             }
                           },
