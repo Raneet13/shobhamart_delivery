@@ -45,7 +45,7 @@ class search_bar extends StatelessWidget {
                           border: InputBorder.none,
                           hintStyle: Theme.of(context)
                               .textTheme
-                              .bodyText1!
+                              .labelLarge!
                               .copyWith(color: AppColors.grey3),
                         ),
                       )
@@ -53,7 +53,7 @@ class search_bar extends StatelessWidget {
                         title: 'Search Brand, Categories',
                         style: Theme.of(context)
                             .textTheme
-                            .bodyText1!
+                            .labelLarge!
                             .copyWith(color: AppColors.grey3, fontSize: 18),
                       ),
               ),

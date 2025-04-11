@@ -19,9 +19,13 @@ class _password_reset_screenState extends State<password_reset_screen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+ bool isTapped = false;
+ 
   void _changePassword() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        isTapped=true;
+      });
       String password = _confirmController.text;
       await SharedPreferencesService.setString('password', password);
       final result = await reset_password_api()
@@ -29,6 +33,9 @@ class _password_reset_screenState extends State<password_reset_screen> {
       final storedUsername =
           await SharedPreferencesService.getString('password');
       if (result.messages.status == 'password Reset Succesfully') {
+         setState(() {
+        isTapped=false;
+      });
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -80,9 +87,11 @@ class _password_reset_screenState extends State<password_reset_screen> {
             children: <Widget>[
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
               Image.asset(
-                'assets/sobha logo blue.png',
-                height: MediaQuery.of(context).size.height * 0.15,
-                width: MediaQuery.of(context).size.width * 0.8,
+                'assets/sobhamart.png',
+                height: 150,
+                width: 150,
+                // height: MediaQuery.of(context).size.height * 0.15,
+                // width: MediaQuery.of(context).size.width * 0.8,
               ),
               SizedBox(height: 32),
               const Text(

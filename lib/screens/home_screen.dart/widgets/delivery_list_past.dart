@@ -90,7 +90,7 @@ class _delivery_list_pastState extends State<delivery_list_past> {
       case '1':
         return Colors.orange;
       case '2':
-        return Colors.yellow;
+        return Colors.green;
       case '3':
         return Colors.red;
       case '4':
@@ -114,53 +114,72 @@ class _delivery_list_pastState extends State<delivery_list_past> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           orderDetailedResponse response = snapshot.data;
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(color: Colors.grey,blurRadius: 1,spreadRadius: 1)
+              ],
+                // border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        basic_text(
+                          title: widget.order.orderId,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8,),
+                        basic_text(
+                          title: getOrderStatus(widget.order.status),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: getOrderStatusColor(widget.order.status),
+                              fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(height: 4,),
+                        Text(
+                          widget.order.paymentMode == '1'
+                              ? 'Cash on Delivery'
+                              : 'Online Payment',
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(),
+                        Text(
+                          '₹${finalPrice(calculateTotal(response.data))}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                       
+                      ],
+                    )
+                  ],
+                ),
+              Align(
+                alignment: Alignment.centerRight,
+                child:  TextButton(onPressed: (){
+                      Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => delivery_detailed_screen(
+                    isCompleted: true,
                         orderresponse: widget.order,
                         userDetails: widget.userDetail,
                       )));
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      basic_text(
-                        title: widget.order.orderId,
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      basic_text(
-                        title: getOrderStatus(widget.order.status),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: getOrderStatusColor(widget.order.status),
-                            fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        widget.order.paymentMode == '1'
-                            ? 'Cash on Delivery'
-                            : 'Online Payment',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '₹${finalPrice(calculateTotal(response.data))}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
+                    }, child: Text("View Details",style: TextStyle(decoration:TextDecoration.underline),)),
+              )
+              ],
             ),
           );
         }

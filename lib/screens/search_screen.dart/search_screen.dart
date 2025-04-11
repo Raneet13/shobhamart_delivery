@@ -93,7 +93,7 @@ class _search_screenState extends State<search_screen> {
                 border: InputBorder.none,
                 hintStyle: Theme.of(context)
                     .textTheme
-                    .bodyText1!
+                    .labelLarge!
                     .copyWith(color: AppColors.grey3, fontSize: 14),
               ),
             )),
@@ -102,7 +102,8 @@ class _search_screenState extends State<search_screen> {
       body: Column(
         children: [
           _suggestions.isEmpty && _searchController.text != ''
-              ? Expanded(
+              ?
+              Expanded(
                   child: Center(
                     child: FutureBuilder<void>(
                       future: Future.delayed(Duration(milliseconds: 500)),
@@ -123,7 +124,12 @@ class _search_screenState extends State<search_screen> {
                   ),
                 )
               : Expanded(
-                  child: ListView.builder(
+                  child:_suggestions.length==0? Center(
+                    child: Text(
+                              'No Such Product Found',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                  ): ListView.builder(
                     itemCount: _suggestions.length,
                     itemBuilder: (context, index) {
                       return Padding(

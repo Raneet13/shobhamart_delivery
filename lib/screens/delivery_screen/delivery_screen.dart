@@ -173,10 +173,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     List<LatLng> polylinecoordinates = [];
     List<dynamic> points = [];
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        'AIzaSyCan8z9oL40cG1ntV-YBcJHvHJ9XZO5WOM',
-        PointLatLng(curLocation.latitude, curLocation.longitude),
-        PointLatLng(dst.latitude, dst.longitude),
-        travelMode: TravelMode.driving);
+        googleApiKey: 'AIzaSyCan8z9oL40cG1ntV-YBcJHvHJ9XZO5WOM',
+        request: PolylineRequest(
+          origin: PointLatLng(curLocation.latitude, curLocation.longitude) ,
+          destination:  PointLatLng(dst.latitude, dst.longitude),
+          mode: TravelMode.driving
+        ),
+       
+       );
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
         polylinecoordinates.add(LatLng(point.latitude, point.longitude));

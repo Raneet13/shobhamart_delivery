@@ -79,9 +79,11 @@ class _login_screenState extends State<login_screen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                'assets/sobha logo blue.png',
-                height: MediaQuery.of(context).size.height * 0.15,
-                width: MediaQuery.of(context).size.width * 0.8,
+                'assets/sobhamart.png',
+                height: 150,
+                width: 150,
+                // height: MediaQuery.of(context).size.height * 0.15,
+                // width: MediaQuery.of(context).size.width * 0.8,
               ),
               SizedBox(height: 32),
               TextFormField(
@@ -126,7 +128,7 @@ class _login_screenState extends State<login_screen> {
                     },
                     child: basic_text(
                       title: 'Forgot Password?',
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                             color: AppColors.orangered,
                             fontWeight: FontWeight.w500,
                           ),

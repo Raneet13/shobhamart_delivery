@@ -21,7 +21,7 @@ class heading extends StatelessWidget {
             title: label,
             style: Theme.of(context)
                 .textTheme
-                .headline6!
+                .titleSmall!
                 .copyWith(color: Colors.black, fontWeight: FontWeight.bold)),
       ],
     );

@@ -32,9 +32,9 @@ class _document_screenState extends State<document_screen> {
       Document(
           title: 'Addhar',
           imageUrl: '$base_url/uploads/${userstatus.adharBack}'),
-      Document(
-          title: 'Store Image',
-          imageUrl: '$base_url/uploads/${userstatus.storeImage}'),
+      // Document(
+      //     title: 'Store Image',
+      //     imageUrl: '$base_url/uploads/${userstatus.storeImage}'),
     ];
     super.initState();
   }
@@ -54,7 +54,7 @@ class _document_screenState extends State<document_screen> {
           title: 'Documents',
           style: Theme.of(context)
               .textTheme
-              .headline6!
+              .titleSmall!
               .copyWith(color: Colors.white),
         ),
         backgroundColor: AppColors.primarycolor2,

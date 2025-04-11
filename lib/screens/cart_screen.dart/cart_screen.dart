@@ -50,7 +50,7 @@ class _cart_screenState extends State<cart_screen> {
           title: '${widget.username}\'s Cart',
           style: Theme.of(context)
               .textTheme
-              .headline6!
+              .titleSmall!
               .copyWith(color: Colors.white, fontSize: 14),
         ),
         backgroundColor: AppColors.primarycolor2,
@@ -390,7 +390,7 @@ class _cart_screenState extends State<cart_screen> {
                             title: 'Checkout',
                             style: Theme.of(context)
                                 .textTheme
-                                .headline6!
+                                .titleSmall!
                                 .copyWith(color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(

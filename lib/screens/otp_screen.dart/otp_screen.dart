@@ -16,7 +16,7 @@ class otp_screen extends StatefulWidget {
 
 class _otp_screenState extends State<otp_screen> {
   bool isTapped = false;
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController _controller = TextEditingController();
   String otp = '';
   late Timer _timer;
   int _start = 40;
@@ -25,6 +25,7 @@ class _otp_screenState extends State<otp_screen> {
   @override
   void initState() {
     super.initState();
+    _controller=TextEditingController(text: widget.otpDetails.messages.status.otp);
   }
 
   void startTimer() {
@@ -58,6 +59,7 @@ class _otp_screenState extends State<otp_screen> {
           ),
         );
       } else {
+         FocusScope.of(context).unfocus();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid OTP'),
@@ -76,6 +78,7 @@ class _otp_screenState extends State<otp_screen> {
           ),
         );
       } else {
+         FocusScope.of(context).unfocus();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid OTP'),
@@ -111,14 +114,13 @@ class _otp_screenState extends State<otp_screen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              const Text(
-                'Shobamart',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+             Image.asset(
+                'assets/sobhamart.png',
+                height: 150,
+                width: 150,
+                // height: MediaQuery.of(context).size.height * 0.15,
+                // width: MediaQuery.of(context).size.width * 0.8,
               ),
               const SizedBox(height: 30),
               Text(

@@ -29,7 +29,7 @@ class profile_screen extends StatelessWidget {
       //     title: 'My Profile',
       //     style: Theme.of(context)
       //         .textTheme
-      //         .headline6!
+      //         .titleSmall!
       //         .copyWith(color: Colors.white),
       //   ),
       //   backgroundColor: AppColors.primarycolor2,
@@ -111,7 +111,7 @@ class profile_screen extends StatelessWidget {
                             title: userDetail!.messages.status.address,
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyText1!
+                                .labelLarge!
                                 .copyWith(
                                     color: AppColors.grey3,
                                     fontWeight: FontWeight.w500,
@@ -136,13 +136,44 @@ class profile_screen extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  SharedPreferencesService.setString('username', '');
+                        showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                                'Logout'),
+                                                            content: Text(
+                                                                'Are you sure you want to Logout Your Account?'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child:
+                                                                    Text('No'),
+                                                              ),
+                                                              TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                      Navigator.pop(
+                                                                      context);
+                                                                 SharedPreferencesService.setString('username', '');
                   SharedPreferencesService.setString('password', '');
                   if (SharedPreferencesService.getString('username') == '' &&
                       SharedPreferencesService.getString('password') == '') {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => wrapper()));
                   }
+                                                                  
+                                                                },
+                                                                child:
+                                                                    Text('Yes'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        });
+                
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.orangered,

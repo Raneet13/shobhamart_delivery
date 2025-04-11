@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.2+3
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -37,17 +37,18 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.2.3
   cached_network_image: ^3.3.1
-  geolocator: ^12.0.0
+  geolocator: ^13.0.2
   google_maps_flutter: ^2.6.1
   permission_handler: ^11.3.1
   geocoding: ^3.0.0
   http: ^1.2.1
   flutter_polyline_points: ^2.0.0
-  location: ^6.0.2
+  location: ^7.0.1
   url_launcher: ^6.2.6
   flutter_slidable: ^3.1.0
   skeleton_text: ^3.0.1
   pinput: ^5.0.0
+  rename: ^3.0.2
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +59,16 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/sobhamart.png"
+  image_path_android: "assets/sobhamart.png" 
+  adaptive_icon_foreground: "assets/sobhamart.png"
+  adaptive_icon_background: "#ffffff"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

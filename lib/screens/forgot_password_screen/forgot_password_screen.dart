@@ -16,6 +16,7 @@ class forgot_password_screen extends StatefulWidget {
 class _forgot_password_screenState extends State<forgot_password_screen> {
   final TextEditingController _controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool isLoading =false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +39,7 @@ class _forgot_password_screenState extends State<forgot_password_screen> {
               children: <Widget>[
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 Image.asset(
-                  'assets/sobha logo blue.png',
+                  'assets/sobhamart.png',
                   height: MediaQuery.of(context).size.height * 0.15,
                   width: MediaQuery.of(context).size.width * 0.8,
                 ),
@@ -79,11 +80,15 @@ class _forgot_password_screenState extends State<forgot_password_screen> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        isLoading=true;
+                      });
                       var otpDetails = await forgot_password_api()
                           .forgot_password(contact_no: _controller.text);
                       if (otpDetails.messages.status ==
                           'Contact No  not found') {
                         String otperror = otpDetails.messages.status;
+                        FocusScope.of(context).unfocus();
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(otperror),
                           backgroundColor: Colors.red,
@@ -93,6 +98,7 @@ class _forgot_password_screenState extends State<forgot_password_screen> {
                         forgotPasswordStatus otpstatus =
                             otpDetails.messages.status;
                         if (otpstatus.otp.isNotEmpty) {
+                          FocusScope.of(context).unfocus();
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('OTP Sent'),
                             backgroundColor: Colors.green,
@@ -105,19 +111,23 @@ class _forgot_password_screenState extends State<forgot_password_screen> {
                                         contact_no: _controller.text,
                                       )));
                         } else {
+                          FocusScope.of(context).unfocus();
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Something Went Wrong'),
                             backgroundColor: Colors.red,
                           ));
                         }
                       }
+                      setState(() {
+                        isLoading=false;
+                      });
                     }
                   },
                   child: Container(
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     alignment: Alignment.center,
-                    child: Text(
+                    child:isLoading?CircularProgressIndicator(): Text(
                       'Get Code',
                       style: TextStyle(
                         color: Colors.white,

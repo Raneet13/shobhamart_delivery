@@ -105,7 +105,7 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
         ),
         title: basic_text(
             title: widget.product_data.productName,
-            style: Theme.of(context).textTheme.headline6!.copyWith(
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w500)),

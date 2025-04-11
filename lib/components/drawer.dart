@@ -119,7 +119,7 @@ class drawer extends StatelessWidget {
                 Center(
                   child: basic_text(
                       title: 'For Qureies',
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
                           color: Colors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.w500)),
@@ -200,7 +200,7 @@ class drawer_menu extends StatelessWidget {
               title: title,
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
+                  .titleSmall!
                   .copyWith(color: Colors.black, fontSize: 20),
             )
           ],

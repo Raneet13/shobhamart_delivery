@@ -20,8 +20,9 @@ import '../../core/theme/base_color.dart';
 import '../../models/order_details_response.dart';
 
 class delivery_detailed_screen extends StatefulWidget {
-  const delivery_detailed_screen(
-      {super.key, required this.orderresponse, required this.userDetails});
+   delivery_detailed_screen(
+      {super.key,this.isCompleted, required this.orderresponse, required this.userDetails});
+      bool? isCompleted=false;
   final Order orderresponse;
   final userResponse userDetails;
 
@@ -435,7 +436,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
           actions: [
             widget.orderresponse.status == '5'
                 ? Container()
-                : Padding(
+                :widget.isCompleted!?SizedBox():  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Card(
                       color: Colors.transparent,
@@ -460,7 +461,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                 title: 'Add',
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyText1!
+                                    .labelLarge!
                                     .copyWith(
                                         fontSize: 14,
                                         color: AppColors.primarycolor2,
@@ -537,204 +538,201 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                   return Padding(
                                                     padding:
                                                         EdgeInsets.all(8.0),
-                                                    child: InkWell(
-                                                      onTap: () {},
-                                                      child: Container(
-                                                        padding:
-                                                            EdgeInsets.all(4),
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.9,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          border: Border.all(
-                                                              color:
-                                                                  Colors.grey),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            CachedNetworkImage(
-                                                              imageUrl:
-                                                                  '$base_url/uploads/${orderDetails.data[index].img}',
-                                                              height: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height *
-                                                                  0.10,
-                                                              width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.23,
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                            ),
-                                                            SizedBox(width: 10),
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Container(
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.55,
-                                                                  child: Text(
-                                                                    orderDetails
-                                                                        .data[
-                                                                            index]
-                                                                        .productName,
-                                                                    maxLines: 2,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        overflow:
-                                                                            TextOverflow.clip),
-                                                                  ),
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(4),
+                                                      width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width *
+                                                          0.9,
+                                                      decoration:
+                                                          BoxDecoration(
+                                                        border: Border.all(
+                                                            color:
+                                                                Colors.grey),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          CachedNetworkImage(
+                                                            imageUrl:
+                                                                '$base_url/uploads/${orderDetails.data[index].img}',
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.10,
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.23,
+                                                            fit: BoxFit
+                                                                .contain,
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Container(
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.55,
+                                                                child: Text(
+                                                                  orderDetails
+                                                                      .data[
+                                                                          index]
+                                                                      .productName,
+                                                                  maxLines: 2,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      overflow:
+                                                                          TextOverflow.clip),
                                                                 ),
-                                                                !isUpdating
-                                                                    ? Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          basic_text(
-                                                                            title:
-                                                                                'Quantity: ${orderDetails.data[index].qty}',
-                                                                            style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey[400],
-                                                                                fontWeight: FontWeight.w500),
-                                                                          ),
-                                                                          SizedBox(
-                                                                              width: 20),
-                                                                          orderDetails.data[0].status == '5' || orderDetails.data[0].status == '3'
-                                                                              ? Container()
-                                                                              : InkWell(
-                                                                                  onTap: () {
-                                                                                    setState(() {
-                                                                                      if (updateIndices.contains(index)) {
-                                                                                        updateIndices.remove(index);
-                                                                                      }
-                                                                                      updateIndices.add(index);
-                                                                                    });
-                                                                                  },
-                                                                                  child: Text(
-                                                                                    'Edit',
-                                                                                    style: TextStyle(color: Colors.red),
-                                                                                  ),
-                                                                                )
-                                                                        ],
-                                                                      )
-                                                                    : Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.center,
-                                                                            children: [
-                                                                              IconButton(
-                                                                                onPressed: () async {
-                                                                                  await SharedPreferencesService().decrementQuantity(
-                                                                                    orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                    widget.orderresponse.userId,
-                                                                                    widget.orderresponse.orderId,
-                                                                                  );
+                                                              ),
+                                                              !isUpdating
+                                                                  ? Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        basic_text(
+                                                                          title:
+                                                                              'Quantity: ${orderDetails.data[index].qty}',
+                                                                          style: TextStyle(
+                                                                              fontSize: 12,
+                                                                              color: Colors.grey[400],
+                                                                              fontWeight: FontWeight.w500),
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width: 20),
+                                                                        orderDetails.data[0].status == '5' || orderDetails.data[0].status == '3'
+                                                                            ? Container()
+                                                                            : InkWell(
+                                                                                onTap: () {
                                                                                   setState(() {
-                                                                                    new_quan--; // Decrement the UI quantity
+                                                                                    if (updateIndices.contains(index)) {
+                                                                                      updateIndices.remove(index);
+                                                                                    }
+                                                                                    updateIndices.add(index);
                                                                                   });
                                                                                 },
-                                                                                icon: Icon(Icons.remove),
-                                                                              ),
-                                                                              Text(new_quan.toString()),
-                                                                              IconButton(
-                                                                                onPressed: () async {
-                                                                                  await SharedPreferencesService().incrementQuantity(
-                                                                                    orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                    widget.orderresponse.userId,
-                                                                                    widget.orderresponse.orderId,
-                                                                                  );
-                                                                                  setState(() {
-                                                                                    new_quan++; // Increment the UI quantity
-                                                                                  });
-                                                                                },
-                                                                                icon: Icon(Icons.add),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          Row(
-                                                                            children: [
-                                                                              new_quan.toString() != orderDetails.data[index].qty
-                                                                                  ? TextButton(
-                                                                                      onPressed: () async {
-                                                                                        final result = await update_quantity_api().update_quantity(
-                                                                                          orders_id: orderDetails.data[index].ordersId,
-                                                                                          qty: new_quan.toString(),
-                                                                                        );
-                                                                                        if (result.message.isNotEmpty) {
-                                                                                          _refreshOrder();
-                                                                                        }
-                                                                                      },
-                                                                                      child: basic_text(
-                                                                                        title: 'Update',
-                                                                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.primarycolor2),
-                                                                                      ),
-                                                                                    )
-                                                                                  : Container(),
-                                                                              TextButton(
-                                                                                onPressed: () {
-                                                                                  setState(() {
-                                                                                    updateIndices.remove(index);
-                                                                                  });
-                                                                                },
-                                                                                child: basic_text(
-                                                                                  title: 'Cancel',
-                                                                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red),
+                                                                                child: Text(
+                                                                                  'Edit',
+                                                                                  style: TextStyle(color: Colors.red),
                                                                                 ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                !isUpdating
-                                                                    ? Container(
-                                                                        width: MediaQuery.of(context).size.width *
-                                                                            0.65,
-                                                                        child:
-                                                                            Row(
+                                                                              )
+                                                                      ],
+                                                                    )
+                                                                  : Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Row(
                                                                           mainAxisAlignment:
                                                                               MainAxisAlignment.spaceBetween,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.center,
                                                                           children: [
-                                                                            Text(
-                                                                              '₹' + orderDetails.data[index].price,
-                                                                              style: TextStyle(
-                                                                                fontSize: 16,
-                                                                                color: AppColors.primarycolor2,
-                                                                                fontWeight: FontWeight.w400,
+                                                                            IconButton(
+                                                                              onPressed: () async {
+                                                                                await SharedPreferencesService().decrementQuantity(
+                                                                                  orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                  widget.orderresponse.userId,
+                                                                                  widget.orderresponse.orderId,
+                                                                                );
+                                                                                setState(() {
+                                                                                  new_quan--; // Decrement the UI quantity
+                                                                                });
+                                                                              },
+                                                                              icon: Icon(Icons.remove),
+                                                                            ),
+                                                                            Text(new_quan.toString()),
+                                                                            IconButton(
+                                                                              onPressed: () async {
+                                                                                await SharedPreferencesService().incrementQuantity(
+                                                                                  orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                  widget.orderresponse.userId,
+                                                                                  widget.orderresponse.orderId,
+                                                                                );
+                                                                                setState(() {
+                                                                                  new_quan++; // Increment the UI quantity
+                                                                                });
+                                                                              },
+                                                                              icon: Icon(Icons.add),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            new_quan.toString() != orderDetails.data[index].qty
+                                                                                ? TextButton(
+                                                                                    onPressed: () async {
+                                                                                      final result = await update_quantity_api().update_quantity(
+                                                                                        orders_id: orderDetails.data[index].ordersId,
+                                                                                        qty: new_quan.toString(),
+                                                                                      );
+                                                                                      if (result.message.isNotEmpty) {
+                                                                                        _refreshOrder();
+                                                                                      }
+                                                                                    },
+                                                                                    child: basic_text(
+                                                                                      title: 'Update',
+                                                                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.primarycolor2),
+                                                                                    ),
+                                                                                  )
+                                                                                : Container(),
+                                                                            TextButton(
+                                                                              onPressed: () {
+                                                                                setState(() {
+                                                                                  updateIndices.remove(index);
+                                                                                });
+                                                                              },
+                                                                              child: basic_text(
+                                                                                title: 'Cancel',
+                                                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red),
                                                                               ),
                                                                             ),
                                                                           ],
                                                                         ),
-                                                                      )
-                                                                    : Container(),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
+                                                                      ],
+                                                                    ),
+                                                              !isUpdating
+                                                                  ? Container(
+                                                                      width: MediaQuery.of(context).size.width *
+                                                                          0.65,
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Text(
+                                                                            '₹' + orderDetails.data[index].price,
+                                                                            style: TextStyle(
+                                                                              fontSize: 16,
+                                                                              color: AppColors.primarycolor2,
+                                                                              fontWeight: FontWeight.w400,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    )
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   );
@@ -840,7 +838,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                               crossAxisAlignment: CrossAxisAlignment.center,
                                                                               children: [
-                                                                                InkWell(
+                                                                               widget.isCompleted!?SizedBox():  InkWell(
                                                                                   onTap: () async {
                                                                                     await SharedPreferencesService().decrementQuantity(
                                                                                       filterData[index].productName,
@@ -856,7 +854,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                                 SizedBox(width: 10),
                                                                                 Text(filterData[index].qty.toString()),
                                                                                 SizedBox(width: 10),
-                                                                                InkWell(
+                                                                               widget.isCompleted!?SizedBox():  InkWell(
                                                                                   onTap: () async {
                                                                                     await SharedPreferencesService().incrementQuantity(
                                                                                       filterData[index].productName,
@@ -887,7 +885,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                                 fontWeight: FontWeight.w400,
                                                                               ),
                                                                             ),
-                                                                            TextButton(
+                                                                          widget.isCompleted!?SizedBox():  TextButton(
                                                                                 onPressed: () async {
                                                                                   await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
                                                                                     _refreshOrder();
@@ -1437,7 +1435,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                               //           title: 'Cancel',
                                               //           style: Theme.of(context)
                                               //               .textTheme
-                                              //               .bodyText1!
+                                              //               .labelLarge!
                                               //               .copyWith(
                                               //                   color: Colors
                                               //                       .white,
@@ -1495,7 +1493,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                         title: 'Submit',
                                                         style: Theme.of(context)
                                                             .textTheme
-                                                            .bodyText1!
+                                                            .labelLarge!
                                                             .copyWith(
                                                                 color: Colors
                                                                     .white,
