@@ -23,21 +23,27 @@ class checkout_api {
   }) async {
     var uri = Uri.parse('$base_url/API/deliveryboycheckout');
 
+    // Map<String, dynamic> body = {
+    //   'user_id': user_id,
+    //   'deliveryboy_id': vendor_id,
+    //   'cupon_code': coupon_code,
+    //   'cupon_price': cupon_price,
+    //   'order_id': order_id,
+    //   'paymentmode': paymentmode,
+    //   'paid_amount': paid_amount,
+    //   'transaction_id': transaction_id,
+    //   'product_name': product_name,
+    //   'qty': qty,
+    //   'product_image': product_image,
+    //   'sale_price': sale_price,
+    //   'variation_id': variation_id,
+    //   'paid_intrest': paid_intrest
+    // };
     Map<String, dynamic> body = {
-      'user_id': user_id,
-      'deliveryboy_id': vendor_id,
-      'cupon_code': coupon_code,
-      'cupon_price': cupon_price,
-      'order_id': order_id,
-      'paymentmode': paymentmode,
-      'paid_amount': paid_amount,
-      'transaction_id': transaction_id,
-      'product_name': product_name,
-      'qty': qty,
-      'product_image': product_image,
-      'sale_price': sale_price,
-      'variation_id': variation_id,
-      'paid_intrest': paid_intrest
+      'order_id':order_id,
+      'user_id':user_id,
+      'paymentmode':paymentmode,
+      'paid_amount':paid_amount
     };
 
     final response = await http.post(

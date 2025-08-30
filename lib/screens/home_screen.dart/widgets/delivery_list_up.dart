@@ -13,7 +13,7 @@ import '../../../models/order_details_response.dart';
 class delivery_list_up extends StatefulWidget {
   const delivery_list_up(
       {super.key, required this.order, required this.userDetail});
-  final Order order;
+  final Datum order;
   final userResponse userDetail;
 
   @override
@@ -25,8 +25,8 @@ class _delivery_list_upState extends State<delivery_list_up> {
   var deliveryCharges = 0;
   @override
   void initState() {
-    orderDetailedresponse = order_detailed_api().order_detailed(
-        order_id: widget.order.orderId, user_id: widget.order.userId);
+    // orderDetailedresponse = order_detailed_api().order_detailed(
+    //     order_id: widget.order.orderId??"", user_id: widget.order.userId);
     super.initState();
   }
 
@@ -107,17 +107,18 @@ class _delivery_list_upState extends State<delivery_list_up> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: orderDetailedresponse,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SkeletonLoader());
-        } else if (snapshot.hasError) {
-          print(snapshot.error);
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          orderDetailedResponse response = snapshot.data;
-          return InkWell(
+    // return FutureBuilder(
+    //   future: orderDetailedresponse,
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return Center(child: SkeletonLoader());
+    //     } else if (snapshot.hasError) {
+    //       print(snapshot.error);
+    //       return Center(child: Text('Error: ${snapshot.error}'));
+    //     } else {
+    //       orderDetailedResponse response = snapshot.data;
+          return 
+         InkWell(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => delivery_detailed_screen(
@@ -137,17 +138,17 @@ class _delivery_list_upState extends State<delivery_list_up> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       basic_text(
-                        title: widget.order.orderId,
+                        title: widget.order.orderId??"",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.black,
                             fontWeight: FontWeight.bold),
                       ),
                       basic_text(
-                        title: getOrderStatus(widget.order.status),
+                        title: getOrderStatus(widget.order.orderStatus??""),
                         style: TextStyle(
                             fontSize: 14,
-                            color: getOrderStatusColor(widget.order.status),
+                            color: getOrderStatusColor(widget.order.orderStatus??""),
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -159,15 +160,15 @@ class _delivery_list_upState extends State<delivery_list_up> {
                     ],
                   ),
                   Text(
-                    '₹${finalPrice(calculateTotal(response.data))}',
+                    '₹${widget.order.productsTotal ??""}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
               ),
             ),
           );
-        }
-      },
-    );
+    //     }
+    //   },
+    // );
   }
 }

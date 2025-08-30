@@ -22,7 +22,7 @@ class search_detailed_screen extends StatefulWidget {
       required this.user,
       required this.var_id});
   final searchProductData product_data;
-  final Order order_data;
+  final Datum order_data;
   final String user;
   final String var_id;
   @override
@@ -41,7 +41,7 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
     super.initState();
     futureProductResponse = single_product_api()
         .single_product_details(
-            user_id: widget.order_data.userId,
+            user_id: widget.order_data.products?.first.userId??"",
             product_id: widget.product_data.productId)
         .then((value) {
       futureVariationResponse = variation_api().variation_details(
@@ -422,7 +422,7 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
                                                 UserProductResponse(
                                                     userId: widget.user,
                                                     orderId: widget
-                                                        .order_data.orderId,
+                                                        .order_data.orderId??"",
                                                     qty: quantity,
                                                     productName:
                                                         single_product_data
@@ -468,14 +468,14 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
                                                             .variationDetails[0]
                                                             .priceVariationId
                                                         : ''),
-                                                widget.order_data.userId);
+                                                widget.order_data.products?.first.userId??"");
                                             final result =
                                                 await SharedPreferencesService()
                                                     .getUserProductResponses(
                                                         widget
-                                                            .order_data.userId,
+                                                            .order_data.products?.first.userId??"",
                                                         widget.order_data
-                                                            .orderId);
+                                                            .orderId??"");
                                             final var_price = variation_data
                                                     .messages
                                                     .status

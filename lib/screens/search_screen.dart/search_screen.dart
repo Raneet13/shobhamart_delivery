@@ -13,7 +13,7 @@ class search_screen extends StatefulWidget {
   const search_screen(
       {Key? key, required this.order_data, required this.user, this.username})
       : super(key: key);
-  final Order order_data;
+  final Datum order_data;
   final String user;
   final String? username;
   @override

@@ -23,7 +23,7 @@ class delivery_detailed_screen extends StatefulWidget {
    delivery_detailed_screen(
       {super.key,this.isCompleted, required this.orderresponse, required this.userDetails});
       bool? isCompleted=false;
-  final Order orderresponse;
+  final Datum orderresponse;
   final userResponse userDetails;
 
   @override
@@ -58,7 +58,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     setState(() {
       savedcartDetailedresponse = SharedPreferencesService()
           .getUserProductResponses(
-              widget.orderresponse.userId, widget.orderresponse.orderId);
+              widget.orderresponse.products?.first.userId??"", widget.orderresponse.orderId??"");
     });
 
     final savedCartResponses = await savedcartDetailedresponse;
@@ -75,11 +75,11 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
 
     setState(() {
       orderDetailedresponse = order_detailed_api().order_detailed(
-          order_id: widget.orderresponse.orderId,
-          user_id: widget.orderresponse.userId);
+          order_id: widget.orderresponse.orderId??"",
+          user_id: widget.orderresponse.products?.first.userId??"");
       savedcartDetailedresponse = SharedPreferencesService()
           .getUserProductResponses(
-              widget.orderresponse.userId, widget.orderresponse.orderId);
+              widget.orderresponse.products?.first.userId??"", widget.orderresponse.orderId??"");
     });
 
     final orderDetails = await orderDetailedresponse;
@@ -96,7 +96,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
       // Check if an item with the same orderId, productName, and qty exists
       bool itemExists = savedCartResponses.any((savedItem) =>
           savedItem.productName == order.productName &&
-          savedItem.userId == widget.orderresponse.userId &&
+          savedItem.userId == widget.orderresponse.products?.first.userId &&
           savedItem.orderId == order.orderId);
 
       if (!itemExists) {
@@ -148,19 +148,19 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
       MaterialPageRoute(
           builder: (context) => search_screen(
                 order_data: widget.orderresponse,
-                user: widget.orderresponse.userId,
+                user: widget.orderresponse.products?.first.userId??"",
               )),
     );
 
     if (result == true) {
-      widget.orderresponse.status == 5
+      widget.orderresponse.orderStatus == "5"
           ? setState(() {
               orderDetailedresponse = order_detailed_api().order_detailed(
-                  order_id: widget.orderresponse.orderId,
-                  user_id: widget.orderresponse.userId);
+                  order_id: widget.orderresponse.orderId??"",
+                  user_id: widget.orderresponse.products?.first.userId??"");
               savedcartDetailedresponse = SharedPreferencesService()
-                  .getUserProductResponses(widget.orderresponse.userId,
-                      widget.orderresponse.orderId);
+                  .getUserProductResponses(widget.orderresponse.products?.first.userId??"",
+                      widget.orderresponse.orderId??"");
             })
           : _refreshOrder();
     }
@@ -173,8 +173,8 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
     focusNode = FocusNode();
     _refreshOrder();
     orderDetailedresponse = order_detailed_api().order_detailed(
-        order_id: widget.orderresponse.orderId,
-        user_id: widget.orderresponse.userId);
+        order_id: widget.orderresponse.orderId??"",
+        user_id: widget.orderresponse.products?.first.userId??"");
     super.initState();
   }
 
@@ -406,906 +406,76 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
         border: Border.all(color: borderColor),
       ),
     );
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          toolbarHeight: kToolbarHeight,
-          leading: Builder(
-            builder: (context) {
-              return IconButton(
-                icon:
-                    const Icon(Icons.arrow_back, size: 30, color: Colors.white),
-                onPressed: () async {
-                  await SharedPreferencesService().removeItemsByOrderId(
-                      widget.orderresponse.orderId,
-                      widget.orderresponse.userId);
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => navbar(
-                                userDetail: widget.userDetails,
-                              )),
-                      (route) => false);
-                },
-              );
-            },
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            toolbarHeight: kToolbarHeight,
+            leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon:
+                      const Icon(Icons.arrow_back, size: 30, color: Colors.white),
+                  onPressed: () async {
+                    await SharedPreferencesService().removeItemsByOrderId(
+                        widget.orderresponse.orderId??"",
+                        widget.orderresponse.products?.first.userId??"");
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => navbar(
+                                  userDetail: widget.userDetails,
+                                )),
+                        (route) => false);
+                  },
+                );
+              },
+            ),
+            title: basic_text(
+                title: widget.orderresponse.orderId??"",
+                style: TextStyle(color: Colors.white, fontSize: 16)),
+            // actions: [
+            //   widget.orderresponse.orderStatus == '5'
+            //       ? Container()
+            //       :widget.isCompleted==true?SizedBox():  Padding(
+            //           padding: const EdgeInsets.symmetric(horizontal: 5),
+            //           child: Card(
+            //             color: Colors.transparent,
+            //             elevation: 6,
+            //             child: ElevatedButton(
+            //                 style: ElevatedButton.styleFrom(
+            //                   backgroundColor: Colors.white,
+            //                 ),
+            //                 onPressed: () async {
+            //                   widget.orderresponse.products?.first.customerName==null|| widget.orderresponse.products?.first.customerName==""
+            //                       ? ScaffoldMessenger.of(context).showSnackBar(
+            //                           SnackBar(
+            //                             content: Text('Unauthorized User'),
+            //                             backgroundColor: Colors.red,
+            //                           ),
+            //                         )
+            //                       : _navigateAndRefresh(context);
+            //                 },
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.symmetric(horizontal: 4),
+            //                   child: basic_text(
+            //                       title: 'Add',
+            //                       style: Theme.of(context)
+            //                           .textTheme
+            //                           .labelLarge!
+            //                           .copyWith(
+            //                               fontSize: 14,
+            //                               color: AppColors.primarycolor2,
+            //                               fontWeight: FontWeight.w500)),
+            //                 )),
+            //           ),
+            //         ),
+            // ],
+            backgroundColor: AppColors.primarycolor2,
           ),
-          title: basic_text(
-              title: widget.orderresponse.orderId,
-              style: TextStyle(color: Colors.white, fontSize: 16)),
-          actions: [
-            widget.orderresponse.status == '5'
-                ? Container()
-                :widget.isCompleted!?SizedBox():  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Card(
-                      color: Colors.transparent,
-                      elevation: 6,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                          ),
-                          onPressed: () async {
-                            widget.orderresponse.cutomerName.isEmpty
-                                ? ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Unauthorized User'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  )
-                                : _navigateAndRefresh(context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: basic_text(
-                                title: 'Add',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(
-                                        fontSize: 14,
-                                        color: AppColors.primarycolor2,
-                                        fontWeight: FontWeight.w500)),
-                          )),
-                    ),
-                  ),
-          ],
-          backgroundColor: AppColors.primarycolor2,
-        ),
-        body: RefreshIndicator(
-          onRefresh: _refreshCart,
-          child: FutureBuilder(
-            future: orderDetailedresponse,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                print(snapshot.error);
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                orderDetailedResponse orderDetails = snapshot.data;
-                return Container(
-                    child: FutureBuilder<List<UserProductResponse>>(
-                        future: savedcartDetailedresponse,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container();
-                          } else if (snapshot.hasError) {
-                            print(snapshot.error);
-                            return Center(
-                                child: Text('Error: ${snapshot.error}'));
-                          } else {
-                            List<UserProductResponse> neworderDetails =
-                                snapshot.data;
-                            // print('New Order Details: $neworderDetails');
-                            List<UserProductResponse> filterData =
-                                neworderDetails
-                                    .where((element) =>
-                                        element.userId ==
-                                            widget.orderresponse.userId &&
-                                        element.orderId ==
-                                            widget.orderresponse.orderId)
-                                    .toList();
-                            print('Filter Data: $filterData');
-                            return filterData.isEmpty
-                                ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        // SizedBox(
-                                        //     height: MediaQuery.of(context)
-                                        //             .size
-                                        //             .height *
-                                        //         0.05),
-                                        widget.orderresponse.status == '5'
-                                            ? ListView.builder(
-                                                scrollDirection: Axis.vertical,
-                                                shrinkWrap: true,
-                                                physics:
-                                                    BouncingScrollPhysics(),
-                                                itemCount:
-                                                    orderDetails.data.length,
-                                                itemBuilder: (context, index) {
-                                                  bool isUpdating =
-                                                      updateIndices
-                                                          .contains(index);
-                                                  return Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Container(
-                                                      padding:
-                                                          EdgeInsets.all(4),
-                                                      width: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .width *
-                                                          0.9,
-                                                      decoration:
-                                                          BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                Colors.grey),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          CachedNetworkImage(
-                                                            imageUrl:
-                                                                '$base_url/uploads/${orderDetails.data[index].img}',
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height *
-                                                                0.10,
-                                                            width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width *
-                                                                0.23,
-                                                            fit: BoxFit
-                                                                .contain,
-                                                          ),
-                                                          SizedBox(width: 10),
-                                                          Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Container(
-                                                                width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width *
-                                                                    0.55,
-                                                                child: Text(
-                                                                  orderDetails
-                                                                      .data[
-                                                                          index]
-                                                                      .productName,
-                                                                  maxLines: 2,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      overflow:
-                                                                          TextOverflow.clip),
-                                                                ),
-                                                              ),
-                                                              !isUpdating
-                                                                  ? Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment.spaceBetween,
-                                                                      children: [
-                                                                        basic_text(
-                                                                          title:
-                                                                              'Quantity: ${orderDetails.data[index].qty}',
-                                                                          style: TextStyle(
-                                                                              fontSize: 12,
-                                                                              color: Colors.grey[400],
-                                                                              fontWeight: FontWeight.w500),
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width: 20),
-                                                                        orderDetails.data[0].status == '5' || orderDetails.data[0].status == '3'
-                                                                            ? Container()
-                                                                            : InkWell(
-                                                                                onTap: () {
-                                                                                  setState(() {
-                                                                                    if (updateIndices.contains(index)) {
-                                                                                      updateIndices.remove(index);
-                                                                                    }
-                                                                                    updateIndices.add(index);
-                                                                                  });
-                                                                                },
-                                                                                child: Text(
-                                                                                  'Edit',
-                                                                                  style: TextStyle(color: Colors.red),
-                                                                                ),
-                                                                              )
-                                                                      ],
-                                                                    )
-                                                                  : Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment.spaceBetween,
-                                                                      children: [
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
-                                                                          children: [
-                                                                            IconButton(
-                                                                              onPressed: () async {
-                                                                                await SharedPreferencesService().decrementQuantity(
-                                                                                  orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                  widget.orderresponse.userId,
-                                                                                  widget.orderresponse.orderId,
-                                                                                );
-                                                                                setState(() {
-                                                                                  new_quan--; // Decrement the UI quantity
-                                                                                });
-                                                                              },
-                                                                              icon: Icon(Icons.remove),
-                                                                            ),
-                                                                            Text(new_quan.toString()),
-                                                                            IconButton(
-                                                                              onPressed: () async {
-                                                                                await SharedPreferencesService().incrementQuantity(
-                                                                                  orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                  widget.orderresponse.userId,
-                                                                                  widget.orderresponse.orderId,
-                                                                                );
-                                                                                setState(() {
-                                                                                  new_quan++; // Increment the UI quantity
-                                                                                });
-                                                                              },
-                                                                              icon: Icon(Icons.add),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                        Row(
-                                                                          children: [
-                                                                            new_quan.toString() != orderDetails.data[index].qty
-                                                                                ? TextButton(
-                                                                                    onPressed: () async {
-                                                                                      final result = await update_quantity_api().update_quantity(
-                                                                                        orders_id: orderDetails.data[index].ordersId,
-                                                                                        qty: new_quan.toString(),
-                                                                                      );
-                                                                                      if (result.message.isNotEmpty) {
-                                                                                        _refreshOrder();
-                                                                                      }
-                                                                                    },
-                                                                                    child: basic_text(
-                                                                                      title: 'Update',
-                                                                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.primarycolor2),
-                                                                                    ),
-                                                                                  )
-                                                                                : Container(),
-                                                                            TextButton(
-                                                                              onPressed: () {
-                                                                                setState(() {
-                                                                                  updateIndices.remove(index);
-                                                                                });
-                                                                              },
-                                                                              child: basic_text(
-                                                                                title: 'Cancel',
-                                                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                              !isUpdating
-                                                                  ? Container(
-                                                                      width: MediaQuery.of(context).size.width *
-                                                                          0.65,
-                                                                      child:
-                                                                          Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          Text(
-                                                                            '₹' + orderDetails.data[index].price,
-                                                                            style: TextStyle(
-                                                                              fontSize: 16,
-                                                                              color: AppColors.primarycolor2,
-                                                                              fontWeight: FontWeight.w400,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    )
-                                                                  : Container(),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              )
-                                            :
-                                            //saved OrderData
-                                            Container(
-                                                child: SingleChildScrollView(
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                    SizedBox(
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height *
-                                                            0.01),
-                                                    ListView.builder(
-                                                      scrollDirection:
-                                                          Axis.vertical,
-                                                      shrinkWrap: true,
-                                                      physics:
-                                                          BouncingScrollPhysics(),
-                                                      itemCount:
-                                                          filterData.length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return Padding(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
-                                                          child: InkWell(
-                                                            onTap: () {},
-                                                            child: Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(4),
-                                                              width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width *
-                                                                  0.9,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                border: Border.all(
-                                                                    color: Colors
-                                                                        .grey),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                              ),
-                                                              child: Row(
-                                                                children: [
-                                                                  CachedNetworkImage(
-                                                                    imageUrl:
-                                                                        '$base_url/uploads/${filterData[index].img}',
-                                                                    height: MediaQuery.of(context)
-                                                                            .size
-                                                                            .height *
-                                                                        0.10,
-                                                                    width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.23,
-                                                                    fit: BoxFit
-                                                                        .contain,
-                                                                  ),
-                                                                  SizedBox(
-                                                                      width:
-                                                                          10),
-                                                                  Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Container(
-                                                                        width: MediaQuery.of(context).size.width *
-                                                                            0.55,
-                                                                        child:
-                                                                            Text(
-                                                                          filterData[index]
-                                                                              .productName,
-                                                                          maxLines:
-                                                                              2,
-                                                                          style: TextStyle(
-                                                                              fontSize: 16,
-                                                                              color: Colors.black,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              overflow: TextOverflow.clip),
-                                                                        ),
-                                                                      ),
-                                                                      widget.orderresponse.status ==
-                                                                              '5'
-                                                                          ? Text(
-                                                                              'Quantity: ' + filterData[index].qty.toString(),
-                                                                              style: TextStyle(color: Colors.grey),
-                                                                            )
-                                                                          : Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                                                              children: [
-                                                                               widget.isCompleted!?SizedBox():  InkWell(
-                                                                                  onTap: () async {
-                                                                                    await SharedPreferencesService().decrementQuantity(
-                                                                                      filterData[index].productName,
-                                                                                      widget.orderresponse.userId,
-                                                                                      widget.orderresponse.orderId,
-                                                                                    );
-                                                                                    setState(() {
-                                                                                      filterData[index].qty--;
-                                                                                    });
-                                                                                  },
-                                                                                  child: Icon(Icons.remove),
-                                                                                ),
-                                                                                SizedBox(width: 10),
-                                                                                Text(filterData[index].qty.toString()),
-                                                                                SizedBox(width: 10),
-                                                                               widget.isCompleted!?SizedBox():  InkWell(
-                                                                                  onTap: () async {
-                                                                                    await SharedPreferencesService().incrementQuantity(
-                                                                                      filterData[index].productName,
-                                                                                      widget.orderresponse.userId,
-                                                                                      widget.orderresponse.orderId,
-                                                                                    );
-                                                                                    setState(() {
-                                                                                      filterData[index].qty++;
-                                                                                    });
-                                                                                  },
-                                                                                  child: Icon(Icons.add),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                      Container(
-                                                                        width: MediaQuery.of(context).size.width *
-                                                                            0.65,
-                                                                        child:
-                                                                            Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Text(
-                                                                              '₹' + filterData[index].price,
-                                                                              style: TextStyle(
-                                                                                fontSize: 16,
-                                                                                color: AppColors.primarycolor2,
-                                                                                fontWeight: FontWeight.w400,
-                                                                              ),
-                                                                            ),
-                                                                          widget.isCompleted!?SizedBox():  TextButton(
-                                                                                onPressed: () async {
-                                                                                  await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
-                                                                                    _refreshOrder();
-                                                                                  });
-                                                                                },
-                                                                                child: Text('Delete', style: TextStyle(color: Colors.red, fontSize: 14))),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                  ]))),
-
-                                        // widget.orderresponse.status == '5'
-                                        //     ? Container()
-                                        //     : Padding(
-                                        //         padding: const EdgeInsets.all(8.0),
-                                        //         child: Column(
-                                        //           crossAxisAlignment:
-                                        //               CrossAxisAlignment.start,
-                                        //           children: [
-                                        //             basic_text(
-                                        //                 title: 'Payment Mode',
-                                        //                 style: Theme.of(context)
-                                        //                     .textTheme
-                                        //                     .titleSmall!
-                                        //                     .copyWith(
-                                        //                         color: AppColors
-                                        //                             .primarycolor2,
-                                        //                         fontWeight:
-                                        //                             FontWeight.w600)),
-                                        //             payment_poll(),
-                                        //             Container(
-                                        //               width: MediaQuery.of(context)
-                                        //                       .size
-                                        //                       .width *
-                                        //                   0.6,
-                                        //               child: text_box(
-                                        //                   value: _cashController,
-                                        //                   height: MediaQuery.of(context)
-                                        //                           .size
-                                        //                           .height *
-                                        //                       0.06,
-                                        //                   title: '',
-                                        //                   hint: 'Enter Cash Collected',
-                                        //                   obsureText: false),
-                                        //             ),
-                                        //           ],
-                                        //         ),
-                                        //       ),
-                                        widget.orderresponse.deliveryAddress
-                                                .isEmpty
-                                            ? Container()
-                                            : Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    basic_text(
-                                                        title:
-                                                            'Delivery Address:',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .titleSmall!
-                                                            .copyWith(
-                                                                color: AppColors
-                                                                    .primarycolor2,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600)),
-                                                    widget
-                                                            .orderresponse
-                                                            .deliveryAddress
-                                                            .isEmpty
-                                                        ? Container()
-                                                        : Container(
-                                                            width:
-                                                                double.infinity,
-                                                            margin: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        10),
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    16),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Colors
-                                                                  .grey[200],
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10),
-                                                              border: Border.all(
-                                                                  color: Colors
-                                                                      .grey),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                basic_text(
-                                                                    title: widget
-                                                                        .orderresponse
-                                                                        .cutomerName,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            16,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        overflow:
-                                                                            TextOverflow.clip)),
-                                                                basic_text(
-                                                                    title: widget
-                                                                        .orderresponse
-                                                                        .deliveryAddress,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        overflow:
-                                                                            TextOverflow.clip)),
-                                                                basic_text(
-                                                                    title: widget
-                                                                            .orderresponse
-                                                                            .cityName +
-                                                                        ', ' +
-                                                                        widget
-                                                                            .orderresponse
-                                                                            .stateName +
-                                                                        '-' +
-                                                                        widget
-                                                                            .orderresponse
-                                                                            .pincode,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        overflow:
-                                                                            TextOverflow.clip)),
-                                                                basic_text(
-                                                                    title: widget
-                                                                        .orderresponse
-                                                                        .customerContactno,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            12,
-                                                                        color: AppColors
-                                                                            .primarycolor2,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500,
-                                                                        overflow:
-                                                                            TextOverflow.clip)),
-                                                              ],
-                                                            ),
-                                                          )
-                                                  ],
-                                                ),
-                                              ),
-
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 10),
-                                            padding: EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[200],
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                basic_text(
-                                                  title: 'Price Details',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .copyWith(
-                                                          color: Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                ),
-                                                SizedBox(height: 20),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title:
-                                                          'Price (${widget.orderresponse.status == '5' ? orderDetails.data.length : filterData.length} items)',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    widget.orderresponse
-                                                                .status ==
-                                                            '5'
-                                                        ? basic_text(
-                                                            title: '₹' +
-                                                                calculateTotalCompletedPrice(
-                                                                  orderDetails
-                                                                      .data,
-                                                                ).toStringAsFixed(
-                                                                    2),
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyLarge!
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .black),
-                                                          )
-                                                        : basic_text(
-                                                            title: '₹' +
-                                                                calculateTotalPrice(
-                                                                        orderDetails
-                                                                            .data,
-                                                                        filterData)
-                                                                    .toString(),
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyLarge!
-                                                                .copyWith(
-                                                                    color: Colors
-                                                                        .black),
-                                                          ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 10),
-                                                price_element(
-                                                    context,
-                                                    'Coupon Discount',
-                                                    double.parse(orderDetails
-                                                            .data[0]
-                                                            .couponAmount)
-                                                        .toStringAsFixed(2),
-                                                    Colors.green),
-                                                SizedBox(height: 10),
-                                                price_element(
-                                                    context,
-                                                    'Delivery Charges',
-                                                    '${orderDetails.data[0].shippingCharge != '' ? double.parse(orderDetails.data[0].shippingCharge!).toStringAsFixed(2) : 0.00}',
-                                                    Colors.black),
-                                                Divider(),
-                                                price_element(
-                                                    context,
-                                                    'Credit Amount',
-                                                    '${orderDetails.dueAmount != '' ? orderDetails.dueAmount.toStringAsFixed(2) : 0.00}',
-                                                    Colors.black),
-                                                price_element(
-                                                    context,
-                                                    'Intrest Amount',
-                                                    '${orderDetails.interestAmount != '' ? orderDetails.interestAmount.toStringAsFixed(2) : 0}',
-                                                    Colors.black),
-                                                Divider(),
-                                                widget.orderresponse.status ==
-                                                        '5'
-                                                    ? price_element(
-                                                        context,
-                                                        'Total Amount',
-                                                        finalPrice(
-                                                                calculateTotalCompleted(
-                                                                    orderDetails
-                                                                        .data,
-                                                                    filterData),
-                                                                orderDetails
-                                                                            .data[
-                                                                                0]
-                                                                            .shippingCharge !=
-                                                                        null
-                                                                    ? orderDetails
-                                                                        .data[0]
-                                                                        .shippingCharge!
-                                                                    : '0.0',
-                                                                orderDetails
-                                                                    .dueAmount
-                                                                    .toString(),
-                                                                orderDetails
-                                                                    .interestAmount
-                                                                    .toString())
-                                                            .toString(),
-                                                        Colors.black)
-                                                    : price_element(
-                                                        context,
-                                                        'Total Amount',
-                                                        finalPrice(
-                                                                calculateTotal(
-                                                                    orderDetails
-                                                                        .data,
-                                                                    filterData),
-                                                                orderDetails
-                                                                    .data[0]
-                                                                    .shippingCharge!,
-                                                                orderDetails
-                                                                    .dueAmount
-                                                                    .toString(),
-                                                                orderDetails
-                                                                    .interestAmount
-                                                                    .toString())
-                                                            .toStringAsFixed(2),
-                                                        Colors.black),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    basic_text(
-                                                      title: 'Paid Amount',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black),
-                                                    ),
-                                                    basic_text(
-                                                      title: '₹' +
-                                                          paidAmount(orderDetails
-                                                                  .transactionDetails)
-                                                              .toStringAsFixed(
-                                                                  2),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyLarge!
-                                                          .copyWith(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
-                                                    ),
-                                                  ],
-                                                ),
-                                                // Row(
-                                                //   mainAxisAlignment:
-                                                //       MainAxisAlignment.spaceBetween,
-                                                //   children: [
-                                                //     basic_text(
-                                                //       title: 'Credit Amount',
-                                                //       style: Theme.of(context)
-                                                //           .textTheme
-                                                //           .bodyLarge!
-                                                //           .copyWith(color: Colors.black),
-                                                //     ),
-                                                //     basic_text(
-                                                //       title: '₹' +
-                                                //           (finalPrice(
-                                                //                       calculateTotal(
-                                                //                           orderDetails
-                                                //                               .data,
-                                                //                           filterData),
-                                                //                       orderDetails.data[0]
-                                                //                           .shippingCharge!) -
-                                                //                   paidAmount(orderDetails
-                                                //                       .transactionDetails))
-                                                //               .toString(),
-                                                //       style: Theme.of(context)
-                                                //           .textTheme
-                                                //           .bodyLarge!
-                                                //           .copyWith(
-                                                //               color: Colors.red,
-                                                //               fontWeight:
-                                                //                   FontWeight.w400),
-                                                //     ),
-                                                //   ],
-                                                // ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.04,
-                                        )
-                                      ],
-                                    ),
-                                  );
-                          }
-                        }));
-              }
-            },
-          ),
-        ),
-        bottomNavigationBar: RefreshIndicator(
-          onRefresh: _refreshCart,
-          child: FutureBuilder(
+          body: RefreshIndicator(
+            onRefresh: _refreshCart,
+            child: FutureBuilder(
               future: orderDetailedresponse,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -1315,200 +485,1029 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   orderDetailedResponse orderDetails = snapshot.data;
-                  return Container(
-                      color: orderDetails.data[0].status == '5'
-                          ? Colors.green
-                          : Colors.transparent,
-                      child: FutureBuilder(
-                          future: savedcartDetailedresponse,
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              print(snapshot.error);
-                              return Center(
-                                  child: Text('Error: ${snapshot.error}'));
-                            } else {
-                              List<UserProductResponse> neworderDetails =
-                                  snapshot.data;
-                              List<UserProductResponse> filterData =
-                                  neworderDetails
-                                      .where((element) =>
-                                          element.userId ==
-                                          widget.orderresponse.userId)
-                                      .toList();
-                              return Container(
-                                color: Colors.transparent,
-                                child: orderDetails.data[0].status == '5'
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Text(
-                                              'Order Delivered',
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                            ),
-                                          ),
-                                        ],
+                  // print('Order Details: ${orderDetails}');
+                  return SingleChildScrollView(
+                    child: Container(
+                        child: FutureBuilder<List<UserProductResponse>>(
+                            future: savedcartDetailedresponse,
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container();
+                              } else if (snapshot.hasError) {
+                                print(snapshot.error);
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else {
+                                List<UserProductResponse> neworderDetails =
+                                    snapshot.data;
+                                // print('New Order Details: $neworderDetails');
+                                List<UserProductResponse> filterData =
+                                    neworderDetails
+                                        .where((element) =>
+                                            element.userId ==
+                                                widget.orderresponse.products?.first.userId &&
+                                            element.orderId ==
+                                                widget.orderresponse.orderId)
+                                        .toList();
+                                print('Filter Data: $filterData');
+                                return filterData.isEmpty
+                                    ? Center(
+                                        child: CircularProgressIndicator(),
                                       )
-                                    : widget.orderresponse.status == '3'
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Text(
-                                              'Order Cancelled',
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .copyWith(color: Colors.red),
-                                            ),
-                                          )
-                                        : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              // ElevatedButton(
-                                              //     style:
-                                              //         ElevatedButton.styleFrom(
-                                              //             backgroundColor:
-                                              //                 Colors.red),
-                                              //     onPressed: () async {
-                                              //       showDialog(
-                                              //           context: context,
-                                              //           builder: (context) {
-                                              //             return AlertDialog(
-                                              //               title: Text(
-                                              //                   'Cancel Your Delivery'),
-                                              //               content: Text(
-                                              //                   'Are you sure you want to cancel the delivery?'),
-                                              //               actions: [
-                                              //                 TextButton(
-                                              //                   onPressed: () {
-                                              //                     Navigator.pop(
-                                              //                         context);
-                                              //                   },
-                                              //                   child:
-                                              //                       Text('No'),
-                                              //                 ),
-                                              //                 TextButton(
-                                              //                   onPressed:
-                                              //                       () async {
-                                              //                     final result = await order_delivery_status_api().order_delivery_status(
-                                              //                         orderid: widget
-                                              //                             .orderresponse
-                                              //                             .orderId,
-                                              //                         status:
-                                              //                             '3');
-                                              //                     if (result
-                                              //                             .messages
-                                              //                             .status ==
-                                              //                         'Order Deliverey Succesfully') {
-                                              //                       Navigator.pop(
-                                              //                           context);
-                                              //                     }
-                                              //                     Navigator.pop(
-                                              //                         context);
-                                              //                   },
-                                              //                   child:
-                                              //                       Text('Yes'),
-                                              //                 ),
-                                              //               ],
-                                              //             );
-                                              //           });
-                                              //     },
-                                              //     child: Padding(
-                                              //       padding: const EdgeInsets
-                                              //           .symmetric(
-                                              //           horizontal: 14),
-                                              //       child: basic_text(
-                                              //           title: 'Cancel',
-                                              //           style: Theme.of(context)
-                                              //               .textTheme
-                                              //               .labelLarge!
-                                              //               .copyWith(
-                                              //                   color: Colors
-                                              //                       .white,
-                                              //                   fontWeight:
-                                              //                       FontWeight
-                                              //                           .w500)),
-                                              //     )),
-                                              ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                      minimumSize: Size(
-                                                          MediaQuery.of(context)
+                                    : SingleChildScrollView(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            // SizedBox(
+                                            //     height: MediaQuery.of(context)
+                                            //             .size
+                                            //             .height *
+                                            //         0.05),
+                                            widget.orderresponse.orderStatus == '5'
+                                                ? ListView.builder(
+                                                    scrollDirection: Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        BouncingScrollPhysics(),
+                                                    itemCount:
+                                                        orderDetails.data.length,
+                                                    itemBuilder: (context, index) {
+                                                      bool isUpdating =
+                                                          updateIndices
+                                                              .contains(index);
+                                                      return Padding(
+                                                        padding:
+                                                            EdgeInsets.all(8.0),
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(4),
+                                                          width: MediaQuery.of(
+                                                                      context)
                                                                   .size
                                                                   .width *
-                                                              0.7,
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                              0.05),
-                                                      backgroundColor: AppColors
-                                                          .primarycolor2),
-                                                  onPressed: () async {
-                                                    // if (final_mode_pay == 3) {
-                                                    showPaidAmountDialog(
+                                                              0.9,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color:
+                                                                    Colors.grey),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(10),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              CachedNetworkImage(
+                                                                imageUrl:
+                                                                    '$base_url/uploads/${orderDetails.data[index].img}',
+                                                                height: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .height *
+                                                                    0.10,
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.23,
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                              ),
+                                                              SizedBox(width: 10),
+                                                              Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Container(
+                                                                    width: MediaQuery.of(
+                                                                                context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.55,
+                                                                    child: Text(
+                                                                      orderDetails
+                                                                          .data[
+                                                                              index]
+                                                                          .productName,
+                                                                      maxLines: 2,
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              16,
+                                                                          color: Colors
+                                                                              .black,
+                                                                          fontWeight:
+                                                                              FontWeight
+                                                                                  .w500,
+                                                                          overflow:
+                                                                              TextOverflow.clip),
+                                                                    ),
+                                                                  ),
+                                                                  !isUpdating
+                                                                      ? Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            basic_text(
+                                                                              title:
+                                                                                  'Quantity: ${orderDetails.data[index].qty}',
+                                                                              style: TextStyle(
+                                                                                  fontSize: 12,
+                                                                                  color: Colors.grey[400],
+                                                                                  fontWeight: FontWeight.w500),
+                                                                            ),
+                                                                            SizedBox(
+                                                                                width: 20),
+                                                                            orderDetails.data[0].status == '5' || orderDetails.data[0].status == '3'
+                                                                                ? Container()
+                                                                                : InkWell(
+                                                                                    onTap: () {
+                                                                                      setState(() {
+                                                                                        if (updateIndices.contains(index)) {
+                                                                                          updateIndices.remove(index);
+                                                                                        }
+                                                                                        updateIndices.add(index);
+                                                                                      });
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      'Edit',
+                                                                                      style: TextStyle(color: Colors.red),
+                                                                                    ),
+                                                                                  )
+                                                                          ],
+                                                                        )
+                                                                      : Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Row(
+                                                                              mainAxisAlignment:
+                                                                                  MainAxisAlignment.spaceBetween,
+                                                                              crossAxisAlignment:
+                                                                                  CrossAxisAlignment.center,
+                                                                              children: [
+                                                                                IconButton(
+                                                                                  onPressed: () async {
+                                                                                    await SharedPreferencesService().decrementQuantity(
+                                                                                      orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                      widget.orderresponse.products?.first.userId??"",
+                                                                                      widget.orderresponse.orderId??"",
+                                                                                    );
+                                                                                    setState(() {
+                                                                                      new_quan--; // Decrement the UI quantity
+                                                                                    });
+                                                                                  },
+                                                                                  icon: Icon(Icons.remove),
+                                                                                ),
+                                                                                Text(new_quan.toString()),
+                                                                                IconButton(
+                                                                                  onPressed: () async {
+                                                                                    await SharedPreferencesService().incrementQuantity(
+                                                                                      orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                      widget.orderresponse.products?.first.userId??"",
+                                                                                      widget.orderresponse.orderId??"",
+                                                                                    );
+                                                                                    setState(() {
+                                                                                      new_quan++; // Increment the UI quantity
+                                                                                    });
+                                                                                  },
+                                                                                  icon: Icon(Icons.add),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            Row(
+                                                                              children: [
+                                                                                new_quan.toString() != orderDetails.data[index].qty
+                                                                                    ? TextButton(
+                                                                                        onPressed: () async {
+                                                                                          final result = await update_quantity_api().update_quantity(
+                                                                                            orders_id: orderDetails.data[index].ordersId,
+                                                                                            qty: new_quan.toString(),
+                                                                                          );
+                                                                                          if (result.message.isNotEmpty) {
+                                                                                            _refreshOrder();
+                                                                                          }
+                                                                                        },
+                                                                                        child: basic_text(
+                                                                                          title: 'Update',
+                                                                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.primarycolor2),
+                                                                                        ),
+                                                                                      )
+                                                                                    : Container(),
+                                                                                TextButton(
+                                                                                  onPressed: () {
+                                                                                    setState(() {
+                                                                                      updateIndices.remove(index);
+                                                                                    });
+                                                                                  },
+                                                                                  child: basic_text(
+                                                                                    title: 'Cancel',
+                                                                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                  !isUpdating
+                                                                      ? Container(
+                                                                          width: MediaQuery.of(context).size.width *
+                                                                              0.65,
+                                                                          child:
+                                                                              Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                '₹' + orderDetails.data[index].price,
+                                                                                style: TextStyle(
+                                                                                  fontSize: 16,
+                                                                                  color: AppColors.primarycolor2,
+                                                                                  fontWeight: FontWeight.w400,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        )
+                                                                      : Container(),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  )
+                                                :
+                                                //saved OrderData
+                                                Container(
+                                                    child: SingleChildScrollView(
+                                                        child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                        SizedBox(
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.01),
+                                                        ListView.builder(
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          shrinkWrap: true,
+                                                          physics:
+                                                              BouncingScrollPhysics(),
+                                                          itemCount:
+                                                              filterData.length,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return Padding(
+                                                              padding:
+                                                                  EdgeInsets.all(
+                                                                      8.0),
+                                                              child: InkWell(
+                                                                onTap: () {},
+                                                                child: Container(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(4),
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.9,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: Colors
+                                                                            .grey),
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                                10),
+                                                                  ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      CachedNetworkImage(
+                                                                        imageUrl:
+                                                                            '$base_url/uploads/${filterData[index].img}',
+                                                                        height: MediaQuery.of(context)
+                                                                                .size
+                                                                                .height *
+                                                                            0.10,
+                                                                        width: MediaQuery.of(context)
+                                                                                .size
+                                                                                .width *
+                                                                            0.23,
+                                                                        fit: BoxFit
+                                                                            .contain,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              10),
+                                                                      Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment
+                                                                                .start,
+                                                                        children: [
+                                                                          Container(
+                                                                            width: MediaQuery.of(context).size.width *
+                                                                                0.55,
+                                                                            child:
+                                                                                Text(
+                                                                              filterData[index]
+                                                                                  .productName,
+                                                                              maxLines:
+                                                                                  2,
+                                                                              style: TextStyle(
+                                                                                  fontSize: 16,
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.w500,
+                                                                                  overflow: TextOverflow.clip),
+                                                                            ),
+                                                                          ),
+                                                                          widget.orderresponse.orderStatus ==
+                                                                                  '5'
+                                                                              ? Text(
+                                                                                  'Quantity: ' + filterData[index].qty.toString(),
+                                                                                  style: TextStyle(color: Colors.grey),
+                                                                                )
+                                                                              : Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                  children: [
+                                                                                   widget.isCompleted ==true?SizedBox():  InkWell(
+                                                                                      onTap: () async {
+                                                                                        await SharedPreferencesService().decrementQuantity(
+                                                                                          filterData[index].productName,
+                                                                                          widget.orderresponse.products?.first.userId??"",
+                                                                                          widget.orderresponse.orderId??"",
+                                                                                        );
+                                                                                        setState(() {
+                                                                                          filterData[index].qty--;
+                                                                                        });
+                                                                                      },
+                                                                                      child: Icon(Icons.remove),
+                                                                                    ),
+                                                                                    SizedBox(width: 10),
+                                                                                    Text(filterData[index].qty.toString()),
+                                                                                    SizedBox(width: 10),
+                                                                                   widget.isCompleted ==true?SizedBox():  InkWell(
+                                                                                      onTap: () async {
+                                                                                        await SharedPreferencesService().incrementQuantity(
+                                                                                          filterData[index].productName,
+                                                                                          widget.orderresponse.products?.first.userId??"",
+                                                                                          widget.orderresponse.orderId??"",
+                                                                                        );
+                                                                                        setState(() {
+                                                                                          filterData[index].qty++;
+                                                                                        });
+                                                                                      },
+                                                                                      child: Icon(Icons.add),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                          Container(
+                                                                            width: MediaQuery.of(context).size.width *
+                                                                                0.65,
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisAlignment:
+                                                                                  MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                                Text(
+                                                                                  '₹' + filterData[index].price,
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 16,
+                                                                                    color: AppColors.primarycolor2,
+                                                                                    fontWeight: FontWeight.w400,
+                                                                                  ),
+                                                                                ),
+                                                                              widget.isCompleted ==true?SizedBox():  TextButton(
+                                                                                    onPressed: () async {
+                                                                                      await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
+                                                                                        _refreshOrder();
+                                                                                      });
+                                                                                    },
+                                                                                    child: Text('Delete', style: TextStyle(color: Colors.red, fontSize: 14))),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        )
+                                                      ]))),
+                    
+                                            // widget.orderresponse.status == '5'
+                                            //     ? Container()
+                                            //     : Padding(
+                                            //         padding: const EdgeInsets.all(8.0),
+                                            //         child: Column(
+                                            //           crossAxisAlignment:
+                                            //               CrossAxisAlignment.start,
+                                            //           children: [
+                                            //             basic_text(
+                                            //                 title: 'Payment Mode',
+                                            //                 style: Theme.of(context)
+                                            //                     .textTheme
+                                            //                     .titleSmall!
+                                            //                     .copyWith(
+                                            //                         color: AppColors
+                                            //                             .primarycolor2,
+                                            //                         fontWeight:
+                                            //                             FontWeight.w600)),
+                                            //             payment_poll(),
+                                            //             Container(
+                                            //               width: MediaQuery.of(context)
+                                            //                       .size
+                                            //                       .width *
+                                            //                   0.6,
+                                            //               child: text_box(
+                                            //                   value: _cashController,
+                                            //                   height: MediaQuery.of(context)
+                                            //                           .size
+                                            //                           .height *
+                                            //                       0.06,
+                                            //                   title: '',
+                                            //                   hint: 'Enter Cash Collected',
+                                            //                   obsureText: false),
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //       ),
+                                            widget.orderresponse.products?.first.deliveryAddress==null||
+                                                   widget.orderresponse.products?.first.deliveryAddress==""
+                                                ? Container()
+                                                : Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(8.0),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        basic_text(
+                                                            title:
+                                                                'Delivery Address:',
+                                                            style: Theme.of(context)
+                                                                .textTheme
+                                                                .titleSmall!
+                                                                .copyWith(
+                                                                    color: AppColors
+                                                                        .primarycolor2,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600)),
+                                                         widget.orderresponse.products?.first.deliveryAddress==null||
+                                                   widget.orderresponse.products?.first.deliveryAddress==""
+                                                ? Container()
+                                                            : Container(
+                                                                width:
+                                                                    double.infinity,
+                                                                margin: EdgeInsets
+                                                                    .symmetric(
+                                                                        vertical:
+                                                                            10),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                        16),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .grey[200],
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    basic_text(
+                                                                        title: widget
+                                                                            .orderresponse.products?.first.customerName??"",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                16,
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                                FontWeight
+                                                                                    .w500,
+                                                                            overflow:
+                                                                                TextOverflow.clip)),
+                                                                    basic_text(
+                                                                        title: widget
+                                                                            .orderresponse
+                                                                            .products?.first.deliveryAddress??"",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                                FontWeight
+                                                                                    .w500,
+                                                                            overflow:
+                                                                                TextOverflow.clip)),
+                                                                    basic_text(
+                                                                        title: widget
+                                                                                .orderresponse
+                                                                                .products?.first.cityName??"" +
+                                                                            ', ' +
+                                                                            (widget
+                                                                                .orderresponse.products?.first.stateName??"") +
+                                                                            '-' +
+                                                                            (widget
+                                                                                .orderresponse
+                                                                                .products?.first.pincode??""),
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            color: Colors
+                                                                                .black,
+                                                                            fontWeight:
+                                                                                FontWeight
+                                                                                    .w500,
+                                                                            overflow:
+                                                                                TextOverflow.clip)),
+                                                                    basic_text(
+                                                                        title: widget
+                                                                            .orderresponse
+                                                                            .products?.first.customerContactno??"",
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: AppColors
+                                                                                .primarycolor2,
+                                                                            fontWeight:
+                                                                                FontWeight
+                                                                                    .w500,
+                                                                            overflow:
+                                                                                TextOverflow.clip)),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                      ],
+                                                    ),
+                                                  ),
+                    
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                padding: EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                      color: Colors.grey),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    basic_text(
+                                                      title: 'Price Details',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleMedium!
+                                                          .copyWith(
+                                                              color: Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight.w500),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        basic_text(
+                                                          title:
+                                                              'Price (${widget.orderresponse.orderStatus == '5' ? orderDetails.data.length : filterData.length} items)',
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(
+                                                                  color:
+                                                                      Colors.black),
+                                                        ),
+                                                        // widget.orderresponse
+                                                        //             .orderStatus ==
+                                                        //         '5'
+                                                        //     ? basic_text(
+                                                        //         title: '₹' +
+                                                        //             calculateTotalCompletedPrice(
+                                                        //               orderDetails
+                                                        //                   .data,
+                                                        //             ).toStringAsFixed(
+                                                        //                 2),
+                                                        //         style: Theme.of(
+                                                        //                 context)
+                                                        //             .textTheme
+                                                        //             .bodyLarge!
+                                                        //             .copyWith(
+                                                        //                 color: Colors
+                                                        //                     .black),
+                                                        //       )
+                                                        //     : 
+                                                            basic_text(
+                                                                title: '₹' +
+                                                                    "${widget.orderresponse.productsTotal??""}",
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyLarge!
+                                                                    .copyWith(
+                                                                        color: Colors
+                                                                            .black),
+                                                              ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 10),
+                                                    price_element(
                                                         context,
-                                                        orderDetails,
-                                                        filterData,
-                                                        orderDetails.data[0]
-                                                            .shippingCharge!,
-                                                        orderDetails.dueAmount
-                                                            .toString(),
+                                                        'Coupon Discount',
                                                         orderDetails
-                                                            .interestAmount
-                                                            .toString());
-                                                    // } else if (final_mode_pay ==
-                                                    //     1) {
-                                                    //   showCashConfirm(
-                                                    //       context,
-                                                    //       orderDetails,
-                                                    //       filterData);
-                                                    // } else {
-                                                    //   ScaffoldMessenger.of(
-                                                    //           context)
-                                                    //       .showSnackBar(SnackBar(
-                                                    //           backgroundColor:
-                                                    //               Colors.red,
-                                                    //           content: Text(
-                                                    //               'Please select payment mode')));
-                                                    // }
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 14),
-                                                    child: basic_text(
-                                                        title: 'Submit',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .labelLarge!
-                                                            .copyWith(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500)),
-                                                  )),
-                                            ],
-                                          ),
-                              );
-                            }
-                          }));
+                                                                .data.first
+                                                                .couponAmount,
+                                                            // .toStringAsFixed(2),
+                                                        Colors.green),
+                                                    SizedBox(height: 10),
+                                                    price_element(
+                                                        context,
+                                                        'Delivery Charges',
+                                                        '${widget.orderresponse.shippingCharge??""}',
+                                                        Colors.black),
+                                                    Divider(),
+                                                    // price_element(
+                                                    //     context,
+                                                    //     'Credit Amount',
+                                                    //     '${orderDetails.dueAmount != '' ? orderDetails.dueAmount.toStringAsFixed(2) : 0.00}',
+                                                    //     Colors.black),
+                                                    // price_element(
+                                                    //     context,
+                                                    //     'Intrest Amount',
+                                                    //     '${orderDetails.interestAmount != '' ? orderDetails.interestAmount.toStringAsFixed(2) : 0}',
+                                                    //     Colors.black),
+                                                    // Divider(),
+                                                    widget.orderresponse.orderStatus ==
+                                                            '5'
+                                                        ? price_element(
+                                                            context,
+                                                            'Total Amount',widget.orderresponse.allTotal??"",
+                                                            // finalPrice(
+                                                            //         // calculateTotalCompleted(
+                                                            //         //     orderDetails
+                                                            //         //         .data,
+                                                            //         //     filterData),
+                                                            //         orderDetails
+                                                            //                     .data[
+                                                            //                         0]
+                                                            //                     .shippingCharge !=
+                                                            //                 null
+                                                            //             ? orderDetails
+                                                            //                 .data[0]
+                                                            //                 .shippingCharge!
+                                                            //             : '0.0',
+                                                            //         orderDetails
+                                                            //             .dueAmount
+                                                            //             .toString(),
+                                                            //         orderDetails
+                                                            //             .interestAmount
+                                                            //             .toString())
+                                                            //     .toString(),
+                                                            Colors.black)
+                                                        : price_element(
+                                                            context,
+                                                            'Total Amount',
+                                                            widget.orderresponse.allTotal??"",
+                                                            // finalPrice(
+                                                            //         calculateTotal(
+                                                            //             orderDetails
+                                                            //                 .data,
+                                                            //             filterData),
+                                                            //         orderDetails
+                                                            //             .data[0]
+                                                            //             .shippingCharge!,
+                                                            //         orderDetails
+                                                            //             .dueAmount
+                                                            //             .toString(),
+                                                            //         orderDetails
+                                                            //             .interestAmount
+                                                            //             .toString())
+                                                            //     .toStringAsFixed(2),
+                                                            Colors.black),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        basic_text(
+                                                          title: 'Paid Amount',
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(
+                                                                  color:
+                                                                      Colors.black),
+                                                        ),
+                                                        basic_text(
+                                                          title: '₹' + orderDetails.transactionDetails.first.paidAmount??"",
+                                                              // paidAmount(orderDetails
+                                                              //         .transactionDetails)
+                                                              //     .toStringAsFixed(
+                                                              //         2),
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(
+                                                                  color:
+                                                                      Colors.black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    // Row(
+                                                    //   mainAxisAlignment:
+                                                    //       MainAxisAlignment.spaceBetween,
+                                                    //   children: [
+                                                    //     basic_text(
+                                                    //       title: 'Credit Amount',
+                                                    //       style: Theme.of(context)
+                                                    //           .textTheme
+                                                    //           .bodyLarge!
+                                                    //           .copyWith(color: Colors.black),
+                                                    //     ),
+                                                    //     basic_text(
+                                                    //       title: '₹' +
+                                                    //           (finalPrice(
+                                                    //                       calculateTotal(
+                                                    //                           orderDetails
+                                                    //                               .data,
+                                                    //                           filterData),
+                                                    //                       orderDetails.data[0]
+                                                    //                           .shippingCharge!) -
+                                                    //                   paidAmount(orderDetails
+                                                    //                       .transactionDetails))
+                                                    //               .toString(),
+                                                    //       style: Theme.of(context)
+                                                    //           .textTheme
+                                                    //           .bodyLarge!
+                                                    //           .copyWith(
+                                                    //               color: Colors.red,
+                                                    //               fontWeight:
+                                                    //                   FontWeight.w400),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.04,
+                                            )
+                                          ],
+                                        ),
+                                      );
+                              }
+                            })),
+                  );
                 }
-              }),
-        ));
+              },
+            ),
+          ),
+          bottomNavigationBar: RefreshIndicator(
+            onRefresh: _refreshCart,
+            child: FutureBuilder(
+                future: orderDetailedresponse,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    print(snapshot.error);
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    orderDetailedResponse orderDetails = snapshot.data;
+                    return Container(
+                        color: orderDetails.data[0].status == '5'
+                            ? Colors.green
+                            : Colors.transparent,
+                        child: FutureBuilder(
+                            future: savedcartDetailedresponse,
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                print(snapshot.error);
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else {
+                                List<UserProductResponse> neworderDetails =
+                                    snapshot.data;
+                                List<UserProductResponse> filterData =
+                                    neworderDetails
+                                        .where((element) =>
+                                            element.userId ==
+                                            widget.orderresponse.products?.first.userId)
+                                        .toList();
+                                return Container(
+                                  color: Colors.transparent,
+                                  child: orderDetails.data[0].status == '5'
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: Text(
+                                                'Order Delivered',
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : widget.orderresponse.orderStatus == '3'
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: Text(
+                                                'Order Cancelled',
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(color: Colors.red),
+                                              ),
+                                            )
+                                          : Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                // ElevatedButton(
+                                                //     style:
+                                                //         ElevatedButton.styleFrom(
+                                                //             backgroundColor:
+                                                //                 Colors.red),
+                                                //     onPressed: () async {
+                                                //       showDialog(
+                                                //           context: context,
+                                                //           builder: (context) {
+                                                //             return AlertDialog(
+                                                //               title: Text(
+                                                //                   'Cancel Your Delivery'),
+                                                //               content: Text(
+                                                //                   'Are you sure you want to cancel the delivery?'),
+                                                //               actions: [
+                                                //                 TextButton(
+                                                //                   onPressed: () {
+                                                //                     Navigator.pop(
+                                                //                         context);
+                                                //                   },
+                                                //                   child:
+                                                //                       Text('No'),
+                                                //                 ),
+                                                //                 TextButton(
+                                                //                   onPressed:
+                                                //                       () async {
+                                                //                     final result = await order_delivery_status_api().order_delivery_status(
+                                                //                         orderid: widget
+                                                //                             .orderresponse
+                                                //                             .orderId,
+                                                //                         status:
+                                                //                             '3');
+                                                //                     if (result
+                                                //                             .messages
+                                                //                             .status ==
+                                                //                         'Order Deliverey Succesfully') {
+                                                //                       Navigator.pop(
+                                                //                           context);
+                                                //                     }
+                                                //                     Navigator.pop(
+                                                //                         context);
+                                                //                   },
+                                                //                   child:
+                                                //                       Text('Yes'),
+                                                //                 ),
+                                                //               ],
+                                                //             );
+                                                //           });
+                                                //     },
+                                                //     child: Padding(
+                                                //       padding: const EdgeInsets
+                                                //           .symmetric(
+                                                //           horizontal: 14),
+                                                //       child: basic_text(
+                                                //           title: 'Cancel',
+                                                //           style: Theme.of(context)
+                                                //               .textTheme
+                                                //               .labelLarge!
+                                                //               .copyWith(
+                                                //                   color: Colors
+                                                //                       .white,
+                                                //                   fontWeight:
+                                                //                       FontWeight
+                                                //                           .w500)),
+                                                //     )),
+                                                ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        minimumSize: Size(
+                                                            MediaQuery.of(context)
+                                                                    .size
+                                                                    .width *
+                                                                0.7,
+                                                            MediaQuery.of(context)
+                                                                    .size
+                                                                    .height *
+                                                                0.05),
+                                                        backgroundColor: AppColors
+                                                            .primarycolor2),
+                                                    onPressed: () async {
+                                                      // if (final_mode_pay == 3) {
+                                                      showPaidAmountDialog(
+                                                          context,
+                                                          orderDetails,
+                                                          filterData,
+                                                          orderDetails.data[0]
+                                                              .shippingCharge!,
+                                                          orderDetails.dueAmount
+                                                              .toString(),
+                                                          orderDetails
+                                                              .interestAmount
+                                                              .toString());
+                                                      // } else if (final_mode_pay ==
+                                                      //     1) {
+                                                      //   showCashConfirm(
+                                                      //       context,
+                                                      //       orderDetails,
+                                                      //       filterData);
+                                                      // } else {
+                                                      //   ScaffoldMessenger.of(
+                                                      //           context)
+                                                      //       .showSnackBar(SnackBar(
+                                                      //           backgroundColor:
+                                                      //               Colors.red,
+                                                      //           content: Text(
+                                                      //               'Please select payment mode')));
+                                                      // }
+                                                    },
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 14),
+                                                      child: basic_text(
+                                                          title: 'Submit',
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .labelLarge!
+                                                              .copyWith(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500)),
+                                                    )),
+                                              ],
+                                            ),
+                                );
+                              }
+                            }));
+                  }
+                }),
+          )),
+    );
   }
 
   Row price_element(
@@ -1560,14 +1559,14 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                             );
                     print(intrest_amount_paid);
                     final result = await checkout_api().checkout(
-                        user_id: widget.orderresponse.userId,
+                        user_id: widget.orderresponse.products?.first.userId??"",
                         vendor_id: vendorStatus.userId,
-                        coupon_code: widget.orderresponse.couponCode,
+                        coupon_code: widget.orderresponse.products?.first.couponCode??"",
                         cupon_price:
-                            double.tryParse(widget.orderresponse.couponAmnt) ??
+                            double.tryParse(widget.orderresponse.products?.first.couponAmnt??"") ??
                                 0,
-                        order_id: widget.orderresponse.orderId,
-                        paymentmode: widget.orderresponse.paymentMode,
+                        order_id: widget.orderresponse.orderId??"",
+                        paymentmode: widget.orderresponse.paymentMode??"",
                         paid_amount: double.parse(_cashController.text),
                         transaction_id: '',
                         product_name:
@@ -1585,8 +1584,8 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                     if (result.messages.status ==
                         'Your Order Placed Successfully') {
                       await SharedPreferencesService()
-                          .removeItemsByOrderId(widget.orderresponse.orderId,
-                              widget.orderresponse.userId)
+                          .removeItemsByOrderId(widget.orderresponse.orderId??"",
+                              widget.orderresponse.products?.first.userId??"")
                           .then((value) {
                         Navigator.pushAndRemoveUntil(
                             context,
@@ -1620,7 +1619,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
       String intrestamount) {
     double _rating = 0.0;
     TextEditingController _reviewController = TextEditingController();
-
+   var  amountClear =double.parse((orderDetails.transactionDetails.first.tAmount??"0").replaceAll(",", ""))- double.parse((orderDetails.transactionDetails.first.paidAmount??"0").replaceAll(",", ""));
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1641,7 +1640,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
           ),
         );
         return AlertDialog(
-          title: Text('Confirm Your Paid Amount',
+          title: widget.orderresponse.paymentMode=="2"?SizedBox(): Text('Confirm Your Paid Amount',
               style: TextStyle(
                   fontFamily: 'Roboto',
                   color: Colors.black,
@@ -1650,15 +1649,24 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              basic_text(
+             basic_text(
                   title:
-                      'Total Amount: ${finalPrice(calculateTotal(orderDetails.data, filterData), deliveryCharges, oldcredit, intrestamount)}',
+                        'Total Amount:${widget.orderresponse.allTotal??""}',
+                        //${finalPrice(calculateTotal(orderDetails.data, filterData), deliveryCharges, oldcredit, intrestamount)}
                   style: TextStyle(
                       color: Colors.green,
                       fontSize: 14,
                       fontWeight: FontWeight.w500)),
-              SizedBox(height: 10),
-              text_box(
+                     basic_text(
+                  title:
+                        'Paid Amount:${orderDetails.transactionDetails.first.paidAmount??""}',
+                        //${finalPrice(calculateTotal(orderDetails.data, filterData), deliveryCharges, oldcredit, intrestamount)}
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500)),
+            widget.orderresponse.paymentMode=="2"||amountClear==0?SizedBox():   SizedBox(height: 10),
+             widget.orderresponse.paymentMode=="2"||amountClear==0?SizedBox():  text_box(
                 value: _reviewController,
                 title: 'Username',
                 hint: 'Paid Amount',
@@ -1748,16 +1756,19 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                 ),
               ),
               onPressed: () async {
-                final input_amount = calculateCredit(
-                    finalPrice(calculateTotal(orderDetails.data, filterData),
-                            deliveryCharges, oldcredit, intrestamount)
-                        .toDouble(),
-                    double.parse(_reviewController.text));
-                final num intrest_amount_paid =
-                    double.parse(_reviewController.text) -
-                        calculateTotalCompletedPrice(
-                          orderDetails.data,
-                        );
+                var amount = double.parse(_reviewController.text==""?'0':_reviewController.text);
+                print('Paid Amount: ${amount}');
+                var input_amount = calculateCredit(
+                    double.parse(widget.orderresponse.allTotal??"0"),
+                    // finalPrice(calculateTotal(orderDetails.data, filterData),
+                    //         deliveryCharges, oldcredit, intrestamount)
+                    //     .toDouble(),
+                    amount);
+                // final num intrest_amount_paid =
+                //     amount -
+                //         calculateTotalCompletedPrice(
+                //           orderDetails.data,
+                //         );
                 print('Input Amount: ${input_amount}');
                 if (input_amount < 0) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -1765,18 +1776,32 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                           'Paid Amount Should be less than or equal to Total Amount'),
                       backgroundColor: Colors.red));
                   return;
-                } else {
-                  if (_controllers.text == orderDetails.data[0].OTP) {
+                }else if(widget.orderresponse.paymentMode=="1"&&amountClear!=0){
+                  if (amount < 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Please enter valid Paid Amount'),
+                      backgroundColor: Colors.red));
+                      return;
+                    
+                  }else if (amount>amountClear) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          'Paid Amount Should be less than or equal to Total Amount'),
+                      backgroundColor: Colors.red));
+                  return;
+                  }else{
+                    print("The Function worked perfectly");
+                      if (_controllers.text == orderDetails.data[0].OTP) {
                     final result = await checkout_api().checkout(
-                        user_id: widget.orderresponse.userId,
+                        user_id: widget.orderresponse.products?.first.userId??"",
                         vendor_id: widget.userDetails.messages.status.userId,
-                        coupon_code: widget.orderresponse.couponCode,
+                        coupon_code: widget.orderresponse.products?.first.couponCode??"",
                         cupon_price:
-                            double.tryParse(widget.orderresponse.couponAmnt) ??
+                            double.tryParse(widget.orderresponse.products?.first.couponAmnt??"") ??
                                 0,
-                        order_id: widget.orderresponse.orderId,
-                        paymentmode: widget.orderresponse.paymentMode,
-                        paid_amount: double.parse(_reviewController.text),
+                        order_id: widget.orderresponse.orderId??"",
+                        paymentmode: widget.orderresponse.paymentMode??"",
+                        paid_amount: amount,
                         transaction_id: '',
                         product_name:
                             getProductNameList(orderDetails.data, filterData),
@@ -1787,14 +1812,14 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                             getProductPrice(orderDetails.data, filterData),
                         variation_id:
                             getProductVar(orderDetails.data, filterData),
-                        paid_intrest: intrest_amount_paid <= 0
-                            ? '0'
-                            : intrest_amount_paid.toString());
-                    if (result.messages.status ==
-                        'Your Order Placed Successfully') {
+                        paid_intrest:"",// intrest_amount_paid <= 0
+                        //     ? '0'
+                        //     : intrest_amount_paid.toString()
+                            );
+                    if (result.error ==false) {
                       await SharedPreferencesService()
-                          .removeItemsByOrderId(widget.orderresponse.orderId,
-                              widget.orderresponse.userId)
+                          .removeItemsByOrderId(widget.orderresponse.orderId??"",
+                              widget.orderresponse.products?.first.userId??"")
                           .then((value) {
                         Navigator.pushAndRemoveUntil(
                             context,
@@ -1810,7 +1835,60 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                         content: Text('Wrong OTP'),
                         backgroundColor: Colors.red));
                   }
+                
+                  }
+                
+
                 }
+                 else {
+                  print("The Function is worked perfectly");
+                  if (_controllers.text == orderDetails.data[0].OTP) {
+                    final result = await checkout_api().checkout(
+                        user_id: widget.orderresponse.products?.first.userId??"",
+                        vendor_id: widget.userDetails.messages.status.userId,
+                        coupon_code: widget.orderresponse.products?.first.couponCode??"",
+                        cupon_price:
+                            double.tryParse(widget.orderresponse.products?.first.couponAmnt??"") ??
+                                0,
+                        order_id: widget.orderresponse.orderId??"",
+                        paymentmode: widget.orderresponse.paymentMode??"",
+                        paid_amount: amount,
+                        transaction_id: '',
+                        product_name:
+                            getProductNameList(orderDetails.data, filterData),
+                        qty: getProductqty(orderDetails.data, filterData),
+                        product_image:
+                            getProductImgList(orderDetails.data, filterData),
+                        sale_price:
+                            getProductPrice(orderDetails.data, filterData),
+                        variation_id:
+                            getProductVar(orderDetails.data, filterData),
+                        paid_intrest:"",// intrest_amount_paid <= 0
+                        //     ? '0'
+                        //     : intrest_amount_paid.toString()
+                            );
+                    if (result.error ==false) {
+                      await SharedPreferencesService()
+                          .removeItemsByOrderId(widget.orderresponse.orderId??"",
+                              widget.orderresponse.products?.first.userId??"")
+                          .then((value) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => navbar(
+                                      userDetail: widget.userDetails,
+                                    )),
+                            (route) => false);
+                      });
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Wrong OTP'),
+                        backgroundColor: Colors.red));
+                  }
+                
+                }
+              
               },
               child: Text('Submit',
                   style: TextStyle(fontFamily: 'Roboto', color: Colors.white)),

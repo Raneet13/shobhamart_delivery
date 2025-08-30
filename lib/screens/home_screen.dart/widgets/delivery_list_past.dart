@@ -14,7 +14,7 @@ class delivery_list_past extends StatefulWidget {
     required this.order,
     required this.userDetail,
   });
-  final Order order;
+  final Datum order;
   final userResponse userDetail;
 
   @override
@@ -26,8 +26,8 @@ class _delivery_list_pastState extends State<delivery_list_past> {
   var deliveryCharges = 0;
   @override
   void initState() {
-    orderDetailedresponse = order_detailed_api().order_detailed(
-        order_id: widget.order.orderId, user_id: widget.order.userId);
+    // orderDetailedresponse = order_detailed_api().order_detailed(
+    //     order_id: widget.order.orderId??"", user_id: widget.order.userId??"");
     // setState(() {
     //   deliveryCharges = int.parse(widget.order.shippingCharge ?? '0');
     // });
@@ -104,16 +104,16 @@ class _delivery_list_pastState extends State<delivery_list_past> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: orderDetailedresponse,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SkeletonLoader());
-        } else if (snapshot.hasError) {
-          print(snapshot.error);
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          orderDetailedResponse response = snapshot.data;
+    // return FutureBuilder(
+    //   future: orderDetailedresponse,
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return Center(child: SkeletonLoader());
+    //     } else if (snapshot.hasError) {
+    //       print(snapshot.error);
+    //       return Center(child: Text('Error: ${snapshot.error}'));
+    //     } else {
+    //       orderDetailedResponse response = snapshot.data;
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
             decoration: BoxDecoration(
@@ -132,7 +132,7 @@ class _delivery_list_pastState extends State<delivery_list_past> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         basic_text(
-                          title: widget.order.orderId,
+                          title: widget.order.orderId??"",
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
@@ -140,10 +140,10 @@ class _delivery_list_pastState extends State<delivery_list_past> {
                         ),
                         SizedBox(height: 8,),
                         basic_text(
-                          title: getOrderStatus(widget.order.status),
+                          title: getOrderStatus(widget.order.orderStatus??""),
                           style: TextStyle(
                               fontSize: 14,
-                              color: getOrderStatusColor(widget.order.status),
+                              color: getOrderStatusColor(widget.order.orderStatus??""),
                               fontWeight: FontWeight.w500),
                         ),
                         SizedBox(height: 4,),
@@ -160,7 +160,7 @@ class _delivery_list_pastState extends State<delivery_list_past> {
                       children: [
                         SizedBox(),
                         Text(
-                          '₹${finalPrice(calculateTotal(response.data))}',
+                          '₹${widget.order.productsTotal??""}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                        
@@ -182,8 +182,8 @@ class _delivery_list_pastState extends State<delivery_list_past> {
               ],
             ),
           );
-        }
-      },
-    );
+    //     }
+    //   },
+    // );
   }
 }

@@ -38,8 +38,8 @@ class _home_screenState extends State<home_screen> {
 
   int completedOrders(orderResponse orders) {
     int count = 0;
-    for (var order in orders.data) {
-      if (order.status == '5' || order.status == '3' || order.status == '2') {
+    for (var order in orders.data??[]) {
+      if (order.orderStatus == '5' || order.orderStatus == '3' || order.orderStatus == '2') {
         count++;
       }
     }
@@ -76,17 +76,17 @@ class _home_screenState extends State<home_screen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             orderResponse orderresponse = snapshot.data!;
-            List<Order> pending_order = orderresponse.data
+            List<Datum> pending_order = (orderresponse.data??[])
                 .where((element) =>
-                    element.status != '5' &&
-                    element.status != '3' &&
-                    element.status != '2')
+                    element.orderStatus != '5' &&
+                    element.orderStatus != '3' &&
+                    element.orderStatus != '2')
                 .toList();
-            List<Order> completed_order = orderresponse.data
+            List<Datum> completed_order = (orderresponse.data??[])
                 .where((element) =>
-                    element.status == '5' ||
-                    element.status == '3' ||
-                    element.status == '2')
+                    element.orderStatus == '5' ||
+                    element.orderStatus == '3' ||
+                    element.orderStatus == '2')
                 .toList();
             return SafeArea(
                 child: Column(
@@ -102,8 +102,8 @@ class _home_screenState extends State<home_screen> {
                           '28/05',
                           Colors.green),
                       _buildInfoCard(
-                          'Left Orders',
-                          (orderresponse.data.length -
+                          'Left Orders',(orderresponse.data?.length??0 -
+                          // orderresponse.data??[].length -
                                   completedOrders(orderresponse))
                               .toString(),
                           '02/06',
