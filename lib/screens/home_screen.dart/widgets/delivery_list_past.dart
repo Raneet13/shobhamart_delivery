@@ -160,7 +160,7 @@ class _delivery_list_pastState extends State<delivery_list_past> {
                       children: [
                         SizedBox(),
                         Text(
-                          '₹${widget.order.productsTotal??""}',
+                          '₹${widget.order.allTotal??""}',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                        

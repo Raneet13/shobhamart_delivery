@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:sm_delivery/api/checkout.dart';
 import 'package:sm_delivery/api/order_details.dart';
+import 'package:sm_delivery/api/send_customer_otp.dart';
 import 'package:sm_delivery/api/update_quantity.dart';
 import 'package:sm_delivery/constants.dart/constants.dart';
 import 'package:sm_delivery/core/utils/shared_preference.dart';
@@ -37,6 +38,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
   final TextEditingController _cashController = TextEditingController();
   final TextEditingController _controllers = TextEditingController();
   late final FocusNode focusNode;
+  bool isLoading = false;
 
   Set<int> updateIndices = {};
   int new_quan = 1;
@@ -1456,7 +1458,24 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                             .primarycolor2),
                                                     onPressed: () async {
                                                       // if (final_mode_pay == 3) {
-                                                      showPaidAmountDialog(
+                                                      
+                                                      if (isLoading) {
+                                                        null;
+                                                      }else{
+                                                        print(orderDetails.data[0].OTP.toString());
+                                                        print(widget.orderresponse.products?.first.customerContactno??"");
+                                                      // }
+                                                      setState(() {
+                                                        isLoading =true;
+                                                      });
+                                                      send_custtomer_otp_api().otp_send(otp: orderDetails.data[0].OTP, user_contact: widget
+                                                                            .orderresponse
+                                                                            .products?.first.customerContactno??"").then((value){
+                                                                              setState(() {
+                                                                                isLoading =false;
+                                                                              });
+                                                                              if (!value["error"]) {
+                                                                                showPaidAmountDialog(
                                                           context,
                                                           orderDetails,
                                                           filterData,
@@ -1467,6 +1486,23 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                           orderDetails
                                                               .interestAmount
                                                               .toString());
+                                                                              } else {
+                                                                                   ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                backgroundColor:
+                                                                    Colors.red,
+                                                                content: Text(
+                                                                    '${value["messages"]}')));
+                                                                              }
+
+
+                                                                            });
+
+
+
+
+                                                      
                                                       // } else if (final_mode_pay ==
                                                       //     1) {
                                                       //   showCashConfirm(
@@ -1482,12 +1518,15 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                       //           content: Text(
                                                       //               'Please select payment mode')));
                                                       // }
-                                                    },
+                                                     } 
+                                                      setState(() {
+                                                        isLoading =false;
+                                                      });},
                                                     child: Padding(
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal: 14),
-                                                      child: basic_text(
+                                                      child:isLoading?SizedBox(height: 20,width: 20, child: Center(child: CircularProgressIndicator(),)): basic_text(
                                                           title: 'Submit',
                                                           style: Theme.of(context)
                                                               .textTheme

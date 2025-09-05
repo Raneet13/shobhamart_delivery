@@ -160,7 +160,7 @@ class _delivery_list_upState extends State<delivery_list_up> {
                     ],
                   ),
                   Text(
-                    '₹${widget.order.productsTotal ??""}',
+                    '₹${widget.order.allTotal ??""}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
