@@ -40,7 +40,7 @@ class SharedPreferencesService {
           .where((response) =>
               response.userId == userId && response.orderId == orderId)
           .toList();
-      print('Loaded UserProductResponses: $responses');
+      print('Loaded UserProductResponses: ${responses.map((e) => e.toJson()).toList()}');
       return responses;
     } else {
       return [];
@@ -70,7 +70,8 @@ class SharedPreferencesService {
         qty: existingProduct.qty + newResponse.qty, // Sum the quantities
         img: existingProduct.img,
         price: existingProduct.price,
-        variation: existingProduct.variation,
+        otp: existingProduct.otp,
+        variation: existingProduct.variation, productId: existingProduct.productId, addressId: existingProduct.addressId, paymentMode: existingProduct.paymentMode, couponCode: existingProduct.couponCode, deliveryboyId:existingProduct.deliveryboyId,
       );
 
       // Remove the old product and insert the updated one

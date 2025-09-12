@@ -3,6 +3,7 @@ class orderDetailedResponse {
   final String message;
   final List<orderDetails> data;
   final List<TransactionDetails> transactionDetails;
+  final Summary? summary;
   final num creaditLimit;
   final num dueAmount;
   final num interestAmount;
@@ -14,6 +15,7 @@ class orderDetailedResponse {
       required this.transactionDetails,
       required this.creaditLimit,
       required this.interestAmount,
+      this.summary,
       required this.dueAmount});
 
   factory orderDetailedResponse.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,9 @@ class orderDetailedResponse {
         data: (json['data']['order_details'] as List)
             .map((i) => orderDetails.fromJson(i))
             .toList(),
+        summary: json['data']['summary'] != null
+            ? Summary.fromJson(json['data']['summary'])
+            : null,
         transactionDetails: (json['data']['tranction_details'] as List)
             .map((i) => TransactionDetails.fromJson(i))
             .toList(),
@@ -34,6 +39,7 @@ class orderDetailedResponse {
 
 class orderDetails {
   final String ordersId;
+  final String productId;
   final String productName;
   final String variationId;
   final String qty;
@@ -57,6 +63,7 @@ class orderDetails {
   final String updateDate;
 
   orderDetails({
+    required this.productId,
     required this.ordersId,
     required this.productName,
     required this.variationId,
@@ -82,8 +89,9 @@ class orderDetails {
   });
 
   factory orderDetails.fromJson(Map<String, dynamic> json) {
-    return orderDetails(
+    return orderDetails( 
       ordersId: json['orders_id'] ?? '',
+      productId: json['product_id'] ?? '',
       productName: json['productname'] ?? '',
       variationId: json['variation_id'] ?? '',
       qty: json['qty'] ?? '',
@@ -108,6 +116,31 @@ class orderDetails {
     );
   }
 }
+class Summary {
+  final String? productTotal;
+  final String? totalAmount;
+  final String? totalPaid;
+  final String? totalDue;
+  final String? totalInterest;
+
+  Summary({
+    this.productTotal,
+    this.totalAmount,
+    this.totalPaid,
+    this.totalDue,
+    this.totalInterest,
+  });
+
+  factory Summary.fromJson(Map<String, dynamic> json) {
+    return Summary(
+      productTotal: json['product_total'],
+      totalAmount: json['total_amount'],
+      totalPaid: json['total_paid'],
+      totalDue: json['total_due'],
+      totalInterest: json['total_interest'],
+    );
+  }
+}
 
 class TransactionDetails {
   final String trId;
@@ -116,10 +149,16 @@ class TransactionDetails {
   final String tAmount;
   final String paidAmount;
   final String paymentType;
+  final String? dueAmount;
   final String paymentMode;
   final String? transactionId;
   final String date;
   final String createdDate;
+   final String? status;
+    final int? daysDiff;
+    final int? interestRate;
+    final String? interestAmount;
+    final String? shippingCharge;
 
   TransactionDetails({
     required this.trId,
@@ -127,11 +166,17 @@ class TransactionDetails {
     required this.orderId,
     required this.tAmount,
     required this.paidAmount,
+    this.dueAmount,
     required this.paymentType,
     required this.paymentMode,
     this.transactionId,
     required this.date,
     required this.createdDate,
+    this.status,
+        this.daysDiff,
+        this.interestRate,
+        this.interestAmount,
+        this.shippingCharge
   });
 
   factory TransactionDetails.fromJson(Map<String, dynamic> json) {
@@ -141,11 +186,18 @@ class TransactionDetails {
       orderId: json['order_id'] ?? '',
       tAmount: json['t_amount'] ?? '',
       paidAmount: json['paid_amount'] ?? '',
+      dueAmount: json["due_amount"],
       paymentType: json['payment_type'] ?? '',
       paymentMode: json['payment_mode'] ?? '',
       transactionId: json['tranction_id'] ?? '',
       date: json['date'] ?? '',
       createdDate: json['created_date'] ?? '',
+       status: json["status"],
+        daysDiff: json["days_diff"],
+        interestRate: json["interest_rate"],
+        interestAmount: json["interest_amount"],
+        shippingCharge: json["shipping_charge"],
     );
   }
 }
+

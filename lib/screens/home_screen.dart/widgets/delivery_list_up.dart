@@ -5,6 +5,7 @@ import 'package:sm_delivery/components/skeletal_text.dart';
 import 'package:sm_delivery/models/login_details/user_detail.dart';
 import 'package:sm_delivery/models/order_response.dart';
 import 'package:sm_delivery/screens/delivery_detailed_screen/delivery_detailed_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../api/order_details.dart';
 import '../../../components/basic_text.dart';
 import '../../../core/theme/base_color.dart';
@@ -104,6 +105,15 @@ class _delivery_list_upState extends State<delivery_list_up> {
         return Colors.black;
     }
   }
+  Future<void> callUser(String phoneNumber) async {
+  final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+
+  if (await canLaunchUrl(callUri)) {
+    await launchUrl(callUri);
+  } else {
+    throw 'Could not launch $callUri';
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +166,59 @@ class _delivery_list_upState extends State<delivery_list_up> {
                             ? 'Cash on Delivery'
                             : 'Online Payment',
                         style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      Row(
+                        children: [
+                           Text('Name : ',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                       basic_text(
+                        title: widget.order.products?.first.customerName??"",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color:Colors.black,
+                            fontWeight: FontWeight.w500),
+                      ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                           Text('Phone : ',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                       basic_text(
+                        title: widget.order.products?.first.customerContactno??"",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color:Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      SizedBox(width: 10,),
+                      InkWell(
+                        onTap: (){
+                          callUser(widget.order.products?.first.customerContactno??"");
+                        },
+                        child: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Colors.blue,
+                          child: Icon(Icons.call,color: Colors.white,size: 16,),
+                        ),
+                      )
+                        ],
+                      ),
+                      SizedBox(height: 8,),
+                      Row(
+                        children: [
+                           Text('Address : ',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                       basic_text(
+                        title: widget.order.products?.first.deliveryAddress??"",
+                        style: TextStyle(
+                            fontSize: 14,
+                            color:Colors.black),
+                      ),
+                        ],
                       ),
                     ],
                   ),

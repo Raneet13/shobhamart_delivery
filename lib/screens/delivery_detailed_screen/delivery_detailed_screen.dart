@@ -19,6 +19,7 @@ import '../../components/basic_text.dart';
 import '../../components/text_box.dart';
 import '../../core/theme/base_color.dart';
 import '../../models/order_details_response.dart';
+import '../update_product/update_product_screen.dart';
 
 class delivery_detailed_screen extends StatefulWidget {
    delivery_detailed_screen(
@@ -71,6 +72,13 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
       });
     }
   }
+updateProductqty({required String productName, required String qty, required String orderID}){
+    order_detailed_api().update_order(
+          order_id: widget.orderresponse.orderId??"",
+          product_name: productName,
+          qty: qty
+          );
+  }
 
   Future<void> _refreshOrder() async {
     if (!mounted) return;
@@ -84,89 +92,90 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
               widget.orderresponse.products?.first.userId??"", widget.orderresponse.orderId??"");
     });
 
-    final orderDetails = await orderDetailedresponse;
-    final savedCartResponses = await savedcartDetailedresponse;
+    // final orderDetails = await orderDetailedresponse;
+    // final savedCartResponses = await savedcartDetailedresponse;
 
-    for (var order in orderDetails.data) {
-      // Fetch variation details
-      final futureVariationResponse = await variation_api().variation_details(
-        user_id: widget.userDetails.messages.status.userId,
-        variation_id: order.variationId,
-      );
-      print('Variation Response: $futureVariationResponse');
+    // for (var order in orderDetails.data) {
+    //   // Fetch variation details
+    //   final futureVariationResponse = await variation_api().variation_details(
+    //     user_id: widget.userDetails.messages.status.userId,
+    //     variation_id: order.variationId,
+    //   );
+    //   print('Variation Response: $futureVariationResponse');
 
-      // Check if an item with the same orderId, productName, and qty exists
-      bool itemExists = savedCartResponses.any((savedItem) =>
-          savedItem.productName == order.productName &&
-          savedItem.userId == widget.orderresponse.products?.first.userId &&
-          savedItem.orderId == order.orderId);
+    //   // Check if an item with the same orderId, productName, and qty exists
+    //   bool itemExists = savedCartResponses.any((savedItem) =>
+    //       savedItem.productName == order.productName &&
+    //       savedItem.userId == widget.orderresponse.products?.first.userId &&
+    //       savedItem.orderId == order.orderId);
 
-      if (!itemExists) {
-        // Add the current order item with variation details to the saved cart list if not already existing
-        savedCartResponses.add(UserProductResponse(
-          productName: order.productName,
-          userId: order.userId,
-          orderId: order.orderId,
-          qty: double.parse(order.qty).toInt(),
-          img: futureVariationResponse
-                  .messages.status.variationDetails.isNotEmpty
-              ? futureVariationResponse
-                  .messages.status.variationDetails[0].image
-              : order.img,
-          price: futureVariationResponse
-                  .messages.status.variationDetails.isNotEmpty
-              ? futureVariationResponse
-                  .messages.status.variationDetails[0].salePrice
-              : order.price,
-          variation: futureVariationResponse
-                  .messages.status.variationDetails.isNotEmpty
-              ? futureVariationResponse
-                  .messages.status.variationDetails[0].priceVariationId
-              : '',
-        ));
-      }
-    }
-    await SharedPreferencesService()
-        .storeUserProductResponses(savedCartResponses);
+    //   if (!itemExists) {
+    //     // Add the current order item with variation details to the saved cart list if not already existing
+    //     savedCartResponses.add(UserProductResponse(
+    //       productName: order.productName,
+    //       userId: order.userId,
+    //       orderId: order.orderId,
+    //       otp: order.OTP,
+    //       qty: double.parse(order.qty).toInt(),
+    //       img: futureVariationResponse
+    //               .messages.status.variationDetails.isNotEmpty
+    //           ? futureVariationResponse
+    //               .messages.status.variationDetails[0].image
+    //           : order.img,
+    //       price: futureVariationResponse
+    //               .messages.status.variationDetails.isNotEmpty
+    //           ? futureVariationResponse
+    //               .messages.status.variationDetails[0].salePrice
+    //           : order.price,
+    //       variation: futureVariationResponse
+    //               .messages.status.variationDetails.isNotEmpty
+    //           ? futureVariationResponse
+    //               .messages.status.variationDetails[0].priceVariationId
+    //           : '', productId: order.productId, addressId: order.addressId??"", paymentMode: order.paymentMode, couponCode: order.couponCode, deliveryboyId: order.deliveryBoyId,
+    //     ));
+    //   }
+    // }
+    // await SharedPreferencesService()
+    //     .storeUserProductResponses(savedCartResponses);
 
-    if (mounted) {
-      setState(() {
-        savedcartDetailedresponse = Future.value(savedCartResponses);
-      });
-    }
-    await SharedPreferencesService()
-        .storeUserProductResponses(savedCartResponses);
+    // if (mounted) {
+    //   setState(() {
+    //     savedcartDetailedresponse = Future.value(savedCartResponses);
+    //   });
+    // }
+    // await SharedPreferencesService()
+    //     .storeUserProductResponses(savedCartResponses);
 
-    if (mounted) {
-      setState(() {
-        savedcartDetailedresponse = Future.value(savedCartResponses);
-      });
-    }
+    // if (mounted) {
+    //   setState(() {
+    //     savedcartDetailedresponse = Future.value(savedCartResponses);
+    //   });
+    // }
   }
 
-  void _navigateAndRefresh(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => search_screen(
-                order_data: widget.orderresponse,
-                user: widget.orderresponse.products?.first.userId??"",
-              )),
-    );
+  // void _navigateAndRefresh(BuildContext context) async {
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //         builder: (context) => search_screen(
+  //               order_data: widget.orderresponse,
+  //               user: widget.orderresponse.products?.first.userId??"",
+  //             )),
+  //   );
 
-    if (result == true) {
-      widget.orderresponse.orderStatus == "5"
-          ? setState(() {
-              orderDetailedresponse = order_detailed_api().order_detailed(
-                  order_id: widget.orderresponse.orderId??"",
-                  user_id: widget.orderresponse.products?.first.userId??"");
-              savedcartDetailedresponse = SharedPreferencesService()
-                  .getUserProductResponses(widget.orderresponse.products?.first.userId??"",
-                      widget.orderresponse.orderId??"");
-            })
-          : _refreshOrder();
-    }
-  }
+  //   if (result == true) {
+  //     widget.orderresponse.orderStatus == "5"
+  //         ? setState(() {
+  //             orderDetailedresponse = order_detailed_api().order_detailed(
+  //                 order_id: widget.orderresponse.orderId??"",
+  //                 user_id: widget.orderresponse.products?.first.userId??"");
+  //             savedcartDetailedresponse = SharedPreferencesService()
+  //                 .getUserProductResponses(widget.orderresponse.products?.first.userId??"",
+  //                     widget.orderresponse.orderId??"");
+  //           })
+  //         : _refreshOrder();
+  //   }
+  // }
 
   var deliveryCharges = 0;
 
@@ -436,47 +445,74 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
             title: basic_text(
                 title: widget.orderresponse.orderId??"",
                 style: TextStyle(color: Colors.white, fontSize: 16)),
-            // actions: [
-            //   widget.orderresponse.orderStatus == '5'
-            //       ? Container()
-            //       :widget.isCompleted==true?SizedBox():  Padding(
-            //           padding: const EdgeInsets.symmetric(horizontal: 5),
-            //           child: Card(
-            //             color: Colors.transparent,
-            //             elevation: 6,
-            //             child: ElevatedButton(
-            //                 style: ElevatedButton.styleFrom(
-            //                   backgroundColor: Colors.white,
-            //                 ),
-            //                 onPressed: () async {
-            //                   widget.orderresponse.products?.first.customerName==null|| widget.orderresponse.products?.first.customerName==""
-            //                       ? ScaffoldMessenger.of(context).showSnackBar(
-            //                           SnackBar(
-            //                             content: Text('Unauthorized User'),
-            //                             backgroundColor: Colors.red,
-            //                           ),
-            //                         )
-            //                       : _navigateAndRefresh(context);
-            //                 },
-            //                 child: Padding(
-            //                   padding: const EdgeInsets.symmetric(horizontal: 4),
-            //                   child: basic_text(
-            //                       title: 'Add',
-            //                       style: Theme.of(context)
-            //                           .textTheme
-            //                           .labelLarge!
-            //                           .copyWith(
-            //                               fontSize: 14,
-            //                               color: AppColors.primarycolor2,
-            //                               fontWeight: FontWeight.w500)),
-            //                 )),
-            //           ),
-            //         ),
-            // ],
+            actions: [
+              FutureBuilder(
+              future: orderDetailedresponse,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  orderDetailedResponse orderDetails = snapshot.data;
+                  return widget.orderresponse.orderStatus == '5'
+                      ? Container()
+                      :widget.isCompleted==true?SizedBox():  Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Card(
+                            color: Colors.transparent,
+                            elevation: 6,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                ),
+                                onPressed: () async {
+                                  if(widget.orderresponse.products?.first.customerName==null|| widget.orderresponse.products?.first.customerName==""){
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                                          SnackBar(
+                                                                            content: Text('Unauthorized User'),
+                                                                            backgroundColor: Colors.red,
+                                                                          ),
+                                                                        );
+                                  }else{
+                                     final result = await  Navigator.push(context, MaterialPageRoute(builder: (context)=>UpdateProductScreen(
+                                      orderresponse: widget.orderresponse, userDetails: widget.userDetails)));
+                                     if (result == true) {
+                                       _refreshOrder();
+                      orderDetailedresponse = order_detailed_api().order_detailed(
+                          order_id: widget.orderresponse.orderId??"",
+                          user_id: widget.orderresponse.products?.first.userId??"");
+                                     }
+                                  }
+                                  
+                                      
+                                      
+                                    
+                                      
+                                      //  _navigateAndRefresh(context);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: basic_text(
+                                      title: 'Update Product',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge!
+                                          .copyWith(
+                                              fontSize: 14,
+                                              color: AppColors.primarycolor2,
+                                              fontWeight: FontWeight.w500)),
+                                )),
+                          ),
+                        );
+                }
+              })
+            ],
             backgroundColor: AppColors.primarycolor2,
           ),
           body: RefreshIndicator(
-            onRefresh: _refreshCart,
+            onRefresh: _refreshOrder,
             child: FutureBuilder(
               future: orderDetailedresponse,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -502,19 +538,19 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                 return Center(
                                     child: Text('Error: ${snapshot.error}'));
                               } else {
-                                List<UserProductResponse> neworderDetails =
-                                    snapshot.data;
-                                // print('New Order Details: $neworderDetails');
-                                List<UserProductResponse> filterData =
-                                    neworderDetails
-                                        .where((element) =>
-                                            element.userId ==
-                                                widget.orderresponse.products?.first.userId &&
-                                            element.orderId ==
-                                                widget.orderresponse.orderId)
-                                        .toList();
-                                print('Filter Data: $filterData');
-                                return filterData.isEmpty
+                                // List<UserProductResponse> neworderDetails =
+                                //     snapshot.data;
+                                // // print('New Order Details: $neworderDetails');
+                                // List<UserProductResponse> filterData =
+                                //     neworderDetails
+                                //         .where((element) =>
+                                //             element.userId ==
+                                //                 orderDetails.data.first.userId &&
+                                //             element.orderId ==
+                                //                 orderDetails.data.first.orderId)
+                                //         .toList();
+                                print('Filter Data: $orderDetails');
+                                return orderDetails.data.isEmpty
                                     ? Center(
                                         child: CircularProgressIndicator(),
                                       )
@@ -653,28 +689,28 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                                               children: [
                                                                                 IconButton(
                                                                                   onPressed: () async {
-                                                                                    await SharedPreferencesService().decrementQuantity(
-                                                                                      orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                      widget.orderresponse.products?.first.userId??"",
-                                                                                      widget.orderresponse.orderId??"",
-                                                                                    );
-                                                                                    setState(() {
-                                                                                      new_quan--; // Decrement the UI quantity
-                                                                                    });
+                                                                                    // await SharedPreferencesService().decrementQuantity(
+                                                                                    //   orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                    //   widget.orderresponse.products?.first.userId??"",
+                                                                                    //   widget.orderresponse.orderId??"",
+                                                                                    // );
+                                                                                    // setState(() {
+                                                                                    //   new_quan--; // Decrement the UI quantity
+                                                                                    // });
                                                                                   },
                                                                                   icon: Icon(Icons.remove),
                                                                                 ),
                                                                                 Text(new_quan.toString()),
                                                                                 IconButton(
                                                                                   onPressed: () async {
-                                                                                    await SharedPreferencesService().incrementQuantity(
-                                                                                      orderDetails.data[index].productName, // Assuming productName is used as identifier
-                                                                                      widget.orderresponse.products?.first.userId??"",
-                                                                                      widget.orderresponse.orderId??"",
-                                                                                    );
-                                                                                    setState(() {
-                                                                                      new_quan++; // Increment the UI quantity
-                                                                                    });
+                                                                                    // await SharedPreferencesService().incrementQuantity(
+                                                                                    //   orderDetails.data[index].productName, // Assuming productName is used as identifier
+                                                                                    //   widget.orderresponse.products?.first.userId??"",
+                                                                                    //   widget.orderresponse.orderId??"",
+                                                                                    // );
+                                                                                    // setState(() {
+                                                                                    //   new_quan++; // Increment the UI quantity
+                                                                                    // });
                                                                                   },
                                                                                   icon: Icon(Icons.add),
                                                                                 ),
@@ -765,145 +801,143 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                           physics:
                                                               BouncingScrollPhysics(),
                                                           itemCount:
-                                                              filterData.length,
+                                                              orderDetails.data.length,
                                                           itemBuilder:
                                                               (context, index) {
                                                             return Padding(
                                                               padding:
                                                                   EdgeInsets.all(
                                                                       8.0),
-                                                              child: InkWell(
-                                                                onTap: () {},
-                                                                child: Container(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(4),
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.9,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    border: Border.all(
-                                                                        color: Colors
-                                                                            .grey),
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(
-                                                                                10),
-                                                                  ),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      CachedNetworkImage(
-                                                                        imageUrl:
-                                                                            '$base_url/uploads/${filterData[index].img}',
-                                                                        height: MediaQuery.of(context)
-                                                                                .size
-                                                                                .height *
-                                                                            0.10,
-                                                                        width: MediaQuery.of(context)
-                                                                                .size
-                                                                                .width *
-                                                                            0.23,
-                                                                        fit: BoxFit
-                                                                            .contain,
-                                                                      ),
-                                                                      SizedBox(
-                                                                          width:
+                                                              child: Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(4),
+                                                                width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.9,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
                                                                               10),
-                                                                      Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment
-                                                                                .start,
-                                                                        children: [
-                                                                          Container(
-                                                                            width: MediaQuery.of(context).size.width *
-                                                                                0.55,
-                                                                            child:
-                                                                                Text(
-                                                                              filterData[index]
-                                                                                  .productName,
-                                                                              maxLines:
-                                                                                  2,
-                                                                              style: TextStyle(
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    CachedNetworkImage(
+                                                                      imageUrl:
+                                                                          '$base_url/uploads/${orderDetails.data[index].img}',
+                                                                      height: MediaQuery.of(context)
+                                                                              .size
+                                                                              .height *
+                                                                          0.10,
+                                                                      width: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.23,
+                                                                      fit: BoxFit
+                                                                          .contain,
+                                                                    ),
+                                                                    SizedBox(
+                                                                        width:
+                                                                            10),
+                                                                    Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Container(
+                                                                          width: MediaQuery.of(context).size.width *
+                                                                              0.55,
+                                                                          child:
+                                                                              Text(
+                                                                            orderDetails.data[index]
+                                                                                .productName,
+                                                                            maxLines:
+                                                                                2,
+                                                                            style: TextStyle(
+                                                                                fontSize: 16,
+                                                                                color: Colors.black,
+                                                                                fontWeight: FontWeight.w500,
+                                                                                overflow: TextOverflow.clip),
+                                                                          ),
+                                                                        ),
+                                                                        widget.orderresponse.orderStatus ==
+                                                                                '5'
+                                                                            ? Text(
+                                                                                'Quantity: ' + orderDetails.data[index].qty.toString(),
+                                                                                style: TextStyle(color: Colors.grey),
+                                                                              )
+                                                                            : Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                children: [
+                                                                                //  widget.isCompleted ==true?SizedBox():  InkWell(
+                                                                                //     onTap: () async {
+                                                                                //       await SharedPreferencesService().decrementQuantity(
+                                                                                //         filterData[index].productName,
+                                                                                //         widget.orderresponse.products?.first.userId??"",
+                                                                                //         widget.orderresponse.orderId??"",
+                                                                                //       );
+                                                                                //       setState(() {
+                                                                                //         filterData[index].qty--;
+                                                                                //       });
+                                                                                //     },
+                                                                                //     child: Icon(Icons.remove),
+                                                                                //   ),
+                                                                                Text("Quantity :"),
+                                                                                  SizedBox(width: 10),
+                                                                                  Text(orderDetails.data[index].qty.toString()),
+                                                                                  SizedBox(width: 10),
+                                                                                //  widget.isCompleted ==true?SizedBox():  InkWell(
+                                                                                //     onTap: () async {
+                                                                                //       await SharedPreferencesService().incrementQuantity(
+                                                                                //         filterData[index].productName,
+                                                                                //         widget.orderresponse.products?.first.userId??"",
+                                                                                //         widget.orderresponse.orderId??"",
+                                                                                //       );
+                                                                                //       setState(() {
+                                                                                //         filterData[index].qty++;
+                                                                                //       });
+                                                                                //     },
+                                                                                //     child: Icon(Icons.add),
+                                                                                //   ),
+                                                                                ],
+                                                                              ),
+                                                                        Container(
+                                                                          width: MediaQuery.of(context).size.width *
+                                                                              0.65,
+                                                                          child:
+                                                                              Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                '₹' + orderDetails.data[index].price,
+                                                                                style: TextStyle(
                                                                                   fontSize: 16,
-                                                                                  color: Colors.black,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                  overflow: TextOverflow.clip),
-                                                                            ),
-                                                                          ),
-                                                                          widget.orderresponse.orderStatus ==
-                                                                                  '5'
-                                                                              ? Text(
-                                                                                  'Quantity: ' + filterData[index].qty.toString(),
-                                                                                  style: TextStyle(color: Colors.grey),
-                                                                                )
-                                                                              : Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                  children: [
-                                                                                   widget.isCompleted ==true?SizedBox():  InkWell(
-                                                                                      onTap: () async {
-                                                                                        await SharedPreferencesService().decrementQuantity(
-                                                                                          filterData[index].productName,
-                                                                                          widget.orderresponse.products?.first.userId??"",
-                                                                                          widget.orderresponse.orderId??"",
-                                                                                        );
-                                                                                        setState(() {
-                                                                                          filterData[index].qty--;
-                                                                                        });
-                                                                                      },
-                                                                                      child: Icon(Icons.remove),
-                                                                                    ),
-                                                                                    SizedBox(width: 10),
-                                                                                    Text(filterData[index].qty.toString()),
-                                                                                    SizedBox(width: 10),
-                                                                                   widget.isCompleted ==true?SizedBox():  InkWell(
-                                                                                      onTap: () async {
-                                                                                        await SharedPreferencesService().incrementQuantity(
-                                                                                          filterData[index].productName,
-                                                                                          widget.orderresponse.products?.first.userId??"",
-                                                                                          widget.orderresponse.orderId??"",
-                                                                                        );
-                                                                                        setState(() {
-                                                                                          filterData[index].qty++;
-                                                                                        });
-                                                                                      },
-                                                                                      child: Icon(Icons.add),
-                                                                                    ),
-                                                                                  ],
+                                                                                  color: AppColors.primarycolor2,
+                                                                                  fontWeight: FontWeight.w400,
                                                                                 ),
-                                                                          Container(
-                                                                            width: MediaQuery.of(context).size.width *
-                                                                                0.65,
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisAlignment:
-                                                                                  MainAxisAlignment.spaceBetween,
-                                                                              children: [
-                                                                                Text(
-                                                                                  '₹' + filterData[index].price,
-                                                                                  style: TextStyle(
-                                                                                    fontSize: 16,
-                                                                                    color: AppColors.primarycolor2,
-                                                                                    fontWeight: FontWeight.w400,
-                                                                                  ),
-                                                                                ),
-                                                                              widget.isCompleted ==true?SizedBox():  TextButton(
-                                                                                    onPressed: () async {
-                                                                                      await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
-                                                                                        _refreshOrder();
-                                                                                      });
-                                                                                    },
-                                                                                    child: Text('Delete', style: TextStyle(color: Colors.red, fontSize: 14))),
-                                                                              ],
-                                                                            ),
+                                                                              ),
+                                                                            // widget.isCompleted ==true?SizedBox():  TextButton(
+                                                                            //       onPressed: () async {
+                                                                            //         await SharedPreferencesService().removeSingleItemsByOrderId(filterData[index].orderId, filterData[index].userId, filterData[index].productName).then((value) {
+                                                                            //           _refreshOrder();
+                                                                            //         });
+                                                                            //       },
+                                                                            //       child: Text('Delete', style: TextStyle(color: Colors.red, fontSize: 14))),
+                                                                            ],
                                                                           ),
-                                                                        ],
-                                                                      ),
-                                                                    ],
-                                                                  ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
                                                             );
@@ -1104,7 +1138,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                       children: [
                                                         basic_text(
                                                           title:
-                                                              'Price (${widget.orderresponse.orderStatus == '5' ? orderDetails.data.length : filterData.length} items)',
+                                                              'Price (${orderDetails.transactionDetails.first.status == '5' ? orderDetails.data.length : orderDetails.data.length} items)',
                                                           style: Theme.of(context)
                                                               .textTheme
                                                               .bodyLarge!
@@ -1133,7 +1167,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                         //     : 
                                                             basic_text(
                                                                 title: '₹' +
-                                                                    "${widget.orderresponse.productsTotal??""}",
+                                                                    "${orderDetails.summary?.productTotal??""}",
                                                                 style: Theme.of(
                                                                         context)
                                                                     .textTheme
@@ -1145,7 +1179,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                       ],
                                                     ),
                                                     SizedBox(height: 10),
-                                                    price_element(
+                                                    orderDetails.data.first.couponAmount == null || orderDetails.data.first.couponAmount==""||orderDetails.data.first.couponAmount=="0"?SizedBox():  price_element(
                                                         context,
                                                         'Coupon Discount',
                                                         orderDetails
@@ -1154,10 +1188,10 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                             // .toStringAsFixed(2),
                                                         Colors.green),
                                                     SizedBox(height: 10),
-                                                    price_element(
+                                                   orderDetails.data.first.shippingCharge == null || orderDetails.data.first.shippingCharge==""||orderDetails.data.first.shippingCharge=="0"?SizedBox(): price_element(
                                                         context,
                                                         'Delivery Charges',
-                                                        '${widget.orderresponse.shippingCharge??""}',
+                                                        '${orderDetails.data.first.shippingCharge??""}',
                                                         Colors.black),
                                                     Divider(),
                                                     // price_element(
@@ -1175,7 +1209,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                             '5'
                                                         ? price_element(
                                                             context,
-                                                            'Total Amount',widget.orderresponse.allTotal??"",
+                                                            'Total Amount',orderDetails.transactionDetails.first.tAmount??"",
                                                             // finalPrice(
                                                             //         // calculateTotalCompleted(
                                                             //         //     orderDetails
@@ -1201,7 +1235,7 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                         : price_element(
                                                             context,
                                                             'Total Amount',
-                                                            widget.orderresponse.allTotal??"",
+                                                            orderDetails.transactionDetails.first.tAmount??"",
                                                             // finalPrice(
                                                             //         calculateTotal(
                                                             //             orderDetails
@@ -1250,39 +1284,31 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                         ),
                                                       ],
                                                     ),
-                                                    // Row(
-                                                    //   mainAxisAlignment:
-                                                    //       MainAxisAlignment.spaceBetween,
-                                                    //   children: [
-                                                    //     basic_text(
-                                                    //       title: 'Credit Amount',
-                                                    //       style: Theme.of(context)
-                                                    //           .textTheme
-                                                    //           .bodyLarge!
-                                                    //           .copyWith(color: Colors.black),
-                                                    //     ),
-                                                    //     basic_text(
-                                                    //       title: '₹' +
-                                                    //           (finalPrice(
-                                                    //                       calculateTotal(
-                                                    //                           orderDetails
-                                                    //                               .data,
-                                                    //                           filterData),
-                                                    //                       orderDetails.data[0]
-                                                    //                           .shippingCharge!) -
-                                                    //                   paidAmount(orderDetails
-                                                    //                       .transactionDetails))
-                                                    //               .toString(),
-                                                    //       style: Theme.of(context)
-                                                    //           .textTheme
-                                                    //           .bodyLarge!
-                                                    //           .copyWith(
-                                                    //               color: Colors.red,
-                                                    //               fontWeight:
-                                                    //                   FontWeight.w400),
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        basic_text(
+                                                          title: 'Due Amount',
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(color: Colors.black),
+                                                        ),
+                                                        basic_text(
+                                                          title: '₹' +
+                                                              (orderDetails.transactionDetails.first.dueAmount??"")
+                                                                  .toString(),
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(
+                                                                  color: Colors.red,
+                                                                  fontWeight:
+                                                                      FontWeight.w400),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -1462,13 +1488,13 @@ class _delivery_detailed_screenState extends State<delivery_detailed_screen> {
                                                       if (isLoading) {
                                                         null;
                                                       }else{
-                                                        print(orderDetails.data[0].OTP.toString());
+                                                        print(orderDetails.data.first.OTP.toString());
                                                         print(widget.orderresponse.products?.first.customerContactno??"");
                                                       // }
                                                       setState(() {
                                                         isLoading =true;
                                                       });
-                                                      send_custtomer_otp_api().otp_send(otp: orderDetails.data[0].OTP, user_contact: widget
+                                                      send_custtomer_otp_api().otp_send(otp: orderDetails.data.first.OTP, user_contact: widget
                                                                             .orderresponse
                                                                             .products?.first.customerContactno??"").then((value){
                                                                               setState(() {

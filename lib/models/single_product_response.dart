@@ -241,7 +241,13 @@ class sVariation {
 // For Local Storage
 class UserProductResponse {
   String userId;
+  String productId;
+  String addressId;
+  String paymentMode;
+  String couponCode;
+  String deliveryboyId;
   String orderId;
+  String otp;
   int qty;
   String productName;
   String img;
@@ -250,22 +256,34 @@ class UserProductResponse {
 
   UserProductResponse({
     required this.userId,
+     required this.productId,
+     required this.addressId,
     required this.orderId,
+    required this.paymentMode,
+     required this.couponCode,
+    required this.deliveryboyId,
     required this.qty,
     required this.productName,
     required this.img,
     required this.price,
     required this.variation,
+    required this.otp,
   });
 
   factory UserProductResponse.fromJson(Map<String, dynamic> json) {
     return UserProductResponse(
       userId: json['userId'] ?? '',
+      productId: json['productId'] ?? '',
+      addressId: json['addressId'] ?? '',
+      paymentMode: json['paymentMode'] ?? '',
+      deliveryboyId: json['deliveryboyId'] ?? '',
+      couponCode: json['couponCode'] ?? '',
       orderId: json['orderId'] ?? '',
       qty: json['qty'] ?? 0,
       productName: json['productName'] ?? '',
       img: json['img'] ?? '',
       price: json['price'] ?? '',
+      otp: json['otp'] ?? '',
       variation: json['variation'] ?? '',
     );
   }
@@ -274,10 +292,16 @@ class UserProductResponse {
     return {
       'userId': userId,
       'orderId': orderId,
+      'addressId':addressId,
+      'productId':productId,
+      'paymentMode': paymentMode,
+      'couponCode':couponCode,
+      'deliveryboyId':deliveryboyId,
       'qty': qty,
       'productName': productName,
       'img': img,
       'price': price,
+      'otp':otp,
       'variation': variation,
     };
   }

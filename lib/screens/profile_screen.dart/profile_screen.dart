@@ -34,7 +34,7 @@ class profile_screen extends StatelessWidget {
       //   ),
       //   backgroundColor: AppColors.primarycolor2,
       // ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +132,8 @@ class profile_screen extends StatelessWidget {
             // _buildMenuItem('Past Orders', () {}),
             // _buildMenuItem('Pending Orders', () {}),
             // _buildMenuItem('Help', () {}),
-            Spacer(),
+            // Spacer(),
+            SizedBox(height: 36),
             Center(
               child: ElevatedButton(
                 onPressed: () {

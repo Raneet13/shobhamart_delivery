@@ -11,11 +11,12 @@ import '../../models/search_response.dart';
 
 class search_screen extends StatefulWidget {
   const search_screen(
-      {Key? key, required this.order_data, required this.user, this.username})
+      {Key? key, required this.order_data, required this.user, this.username,required this.otp})
       : super(key: key);
   final Datum order_data;
   final String user;
   final String? username;
+  final String otp;
   @override
   _search_screenState createState() => _search_screenState();
 }
@@ -138,6 +139,7 @@ class _search_screenState extends State<search_screen> {
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => search_detailed_screen(
+                                      otp: widget.otp,
                                       product_data: _suggestions[index],
                                       order_data: widget.order_data,
                                       user: widget.user,

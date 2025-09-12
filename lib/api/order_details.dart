@@ -36,4 +36,37 @@ class order_detailed_api {
       return orderDetailedResponse.fromJson(jsonResponse);
     }
   }
+   Future<orderDetailedResponse> update_order({
+    required String order_id,
+    required String product_name,
+    required String qty
+  }) async {
+    var uri = Uri.parse('$base_url/API/increasequantity');
+
+    Map<String, dynamic> body = {
+      'order_id': order_id,
+      'product_name': product_name,
+      'qty':qty
+    };
+
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: json.encode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      print('delivery: $jsonResponse');
+      return orderDetailedResponse.fromJson(jsonResponse);
+    } else {
+      final jsonResponse =
+          response.body.isNotEmpty ? json.decode(response.body) : {};
+      print('Request failed with status: ${response.statusCode}.');
+      return orderDetailedResponse.fromJson(jsonResponse);
+    }
+  }
 }

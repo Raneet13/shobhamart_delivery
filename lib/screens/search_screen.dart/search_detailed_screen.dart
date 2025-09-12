@@ -20,11 +20,13 @@ class search_detailed_screen extends StatefulWidget {
       required this.product_data,
       required this.order_data,
       required this.user,
+      required this.otp,
       required this.var_id});
   final searchProductData product_data;
   final Datum order_data;
   final String user;
   final String var_id;
+  final String otp;
   @override
   State<search_detailed_screen> createState() => _search_detailed_screenState();
 }
@@ -111,426 +113,433 @@ class _search_detailed_screenState extends State<search_detailed_screen> {
                 fontWeight: FontWeight.w500)),
         backgroundColor: AppColors.primarycolor2,
       ),
-      body: SingleChildScrollView(
-        child: FutureBuilder(
-          future: futureProductResponse,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: SkeletonLoaderDetailedScreen());
-            } else if (snapshot.hasError) {
-              print(snapshot.error);
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No Catagory available'));
-            } else {
-              SingleProductResponse data = snapshot.data!;
-              return Container(
-                child: FutureBuilder(
-                  future: futureProductResponse,
-                  builder: (BuildContext context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData) {
-                      return Center(child: Text('No Items available'));
-                    } else {
-                      SProductData single_product_data =
-                          snapshot.data!.messages.status.singleProduct[0];
-                      SingleProductResponse? all_data = snapshot.data;
-                      return Container(
-                          padding: EdgeInsets.all(8),
-                          child: FutureBuilder(
-                            future: futureVariationResponse,
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: SkeletonLoaderDetailedScreen());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error: ${snapshot.error}'));
-                              } else if (!snapshot.hasData) {
-                                return Center(
-                                    child: Text('No Items available'));
-                              } else {
-                                variationResponse variation_data =
-                                    snapshot.data;
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    // Product Image
-                                    Hero(
-                                      tag: 'product',
-                                      child: variation_data.messages.status
-                                                  .variationDetails.isEmpty &&
-                                              data.messages.status
-                                                  .productGallery.isNotEmpty
-                                          ? Column(
-                                              children: [
-                                                Container(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.25,
-                                                  child: PageView.builder(
-                                                      controller:
-                                                          _pageController,
-                                                      onPageChanged:
-                                                          (int page) {
-                                                        setState(() {
-                                                          _currentPage = page;
-                                                        });
-                                                      },
-                                                      itemCount: data
-                                                          .messages
-                                                          .status
-                                                          .productGallery
-                                                          .length,
-                                                      itemBuilder:
-                                                          (context, i) {
-                                                        return Container(
-                                                          height: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.25,
-                                                          decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          6),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          6)),
-                                                              image: DecorationImage(
-                                                                  image: NetworkImage(
-                                                                      '$base_url/uploads/${data.messages.status.productGallery[i].image}'),
-                                                                  fit: BoxFit
-                                                                      .contain)),
-                                                        );
-                                                      }),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: FutureBuilder(
+            future: futureProductResponse,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: SkeletonLoaderDetailedScreen());
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData) {
+                return Center(child: Text('No Catagory available'));
+              } else {
+                SingleProductResponse data = snapshot.data!;
+                return Container(
+                  child: FutureBuilder(
+                    future: futureProductResponse,
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData) {
+                        return Center(child: Text('No Items available'));
+                      } else {
+                        SProductData single_product_data =
+                            snapshot.data!.messages.status.singleProduct[0];
+                        SingleProductResponse? all_data = snapshot.data;
+                        return Container(
+                            padding: EdgeInsets.all(8),
+                            child: FutureBuilder(
+                              future: futureVariationResponse,
+                              builder:
+                                  (BuildContext context, AsyncSnapshot snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: SkeletonLoaderDetailedScreen());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                } else if (!snapshot.hasData) {
+                                  return Center(
+                                      child: Text('No Items available'));
+                                } else {
+                                  variationResponse variation_data =
+                                      snapshot.data;
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      // Product Image
+                                      Hero(
+                                        tag: 'product',
+                                        child: variation_data.messages.status
+                                                    .variationDetails.isEmpty &&
+                                                data.messages.status
+                                                    .productGallery.isNotEmpty
+                                            ? Column(
+                                                children: [
+                                                  Container(
+                                                    height: MediaQuery.of(context)
+                                                            .size
+                                                            .height *
+                                                        0.25,
+                                                    child: PageView.builder(
+                                                        controller:
+                                                            _pageController,
+                                                        onPageChanged:
+                                                            (int page) {
+                                                          setState(() {
+                                                            _currentPage = page;
+                                                          });
+                                                        },
+                                                        itemCount: data
+                                                            .messages
+                                                            .status
+                                                            .productGallery
+                                                            .length,
+                                                        itemBuilder:
+                                                            (context, i) {
+                                                          return Container(
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.25,
+                                                            decoration: BoxDecoration(
+                                                                borderRadius: BorderRadius.only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            6),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            6)),
+                                                                image: DecorationImage(
+                                                                    image: NetworkImage(
+                                                                        '$base_url/uploads/${data.messages.status.productGallery[i].image}'),
+                                                                    fit: BoxFit
+                                                                        .contain)),
+                                                          );
+                                                        }),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: List.generate(
+                                                        data
+                                                            .messages
+                                                            .status
+                                                            .productGallery
+                                                            .length, (index) {
+                                                      return Container(
+                                                        width: 8,
+                                                        height: 8,
+                                                        margin:
+                                                            EdgeInsets.symmetric(
+                                                                horizontal: 5),
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
+                                                          color: _currentPage ==
+                                                                  index
+                                                              ? AppColors
+                                                                  .primarycolor2
+                                                              : Colors.grey,
+                                                        ),
+                                                      );
+                                                    }),
+                                                  ),
+                                                ],
+                                              )
+                                            : Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.25,
+                                                child: Image.network(
+                                                  '$base_url/uploads/${variation_data.messages.status.variationDetails.isEmpty ? data.messages.status.singleProduct[0].primaryImage : variation_data.messages.status.variationDetails[0].image}',
+                                                  fit: BoxFit.contain,
                                                 ),
-                                                SizedBox(height: 10),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: List.generate(
-                                                      data
-                                                          .messages
-                                                          .status
-                                                          .productGallery
-                                                          .length, (index) {
-                                                    return Container(
-                                                      width: 8,
-                                                      height: 8,
-                                                      margin:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 5),
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: _currentPage ==
-                                                                index
-                                                            ? AppColors
-                                                                .primarycolor2
-                                                            : Colors.grey,
-                                                      ),
-                                                    );
-                                                  }),
-                                                ),
-                                              ],
-                                            )
-                                          : Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.25,
-                                              child: Image.network(
-                                                '$base_url/uploads/${variation_data.messages.status.variationDetails.isEmpty ? data.messages.status.singleProduct[0].primaryImage : variation_data.messages.status.variationDetails[0].image}',
-                                                fit: BoxFit.contain,
+                                              ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Wrap(
+                                        spacing: 8.0,
+                                        runSpacing: 4.0,
+                                        children: _buildAttributeWidgets(
+                                            all_data!.messages.status.attributes),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(16.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              all_data.messages.status.attributes
+                                                      .isNotEmpty
+                                                  ? single_product_data
+                                                          .productName +
+                                                      ' ' +
+                                                      '(${all_data.messages.status.attributes[selectedAttributeIndex].attributeName}' +
+                                                      ' ' +
+                                                      '${all_data.messages.status.attributes[selectedAttributeIndex].variations[selectedVariationIndex].variationName})'
+                                                  : all_data
+                                                      .messages
+                                                      .status
+                                                      .singleProduct[0]
+                                                      .productName,
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Wrap(
-                                      spacing: 8.0,
-                                      runSpacing: 4.0,
-                                      children: _buildAttributeWidgets(
-                                          all_data!.messages.status.attributes),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            all_data.messages.status.attributes
-                                                    .isNotEmpty
-                                                ? single_product_data
-                                                        .productName +
-                                                    ' ' +
-                                                    '(${all_data.messages.status.attributes[selectedAttributeIndex].attributeName}' +
-                                                    ' ' +
-                                                    '${all_data.messages.status.attributes[selectedAttributeIndex].variations[selectedVariationIndex].variationName})'
-                                                : all_data
-                                                    .messages
-                                                    .status
-                                                    .singleProduct[0]
-                                                    .productName,
-                                            style: TextStyle(
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.bold,
+                                            SizedBox(height: 8.0),
+                                            Row(
+                                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                basic_text(
+                                                    title: variation_data
+                                                            .messages
+                                                            .status
+                                                            .variationDetails
+                                                            .isNotEmpty
+                                                        ? 'MRP ₹${variation_data.messages.status.variationDetails[0].regularPrice}'
+                                                        : 'MRP ₹${all_data.messages.status.singleProduct[0].regularPrice}',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium!
+                                                        .copyWith(
+                                                          color: Colors.black,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        )),
+                                              ],
                                             ),
-                                          ),
-                                          SizedBox(height: 8.0),
-                                          Row(
-                                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              basic_text(
-                                                  title: variation_data
-                                                          .messages
-                                                          .status
-                                                          .variationDetails
-                                                          .isNotEmpty
-                                                      ? 'MRP ₹${variation_data.messages.status.variationDetails[0].regularPrice}'
-                                                      : 'MRP ₹${all_data.messages.status.singleProduct[0].regularPrice}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .copyWith(
-                                                        color: Colors.black,
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      )),
-                                            ],
-                                          ),
-                                          SizedBox(width: 6),
-                                          basic_text(
-                                              title: variation_data
+                                            SizedBox(width: 6),
+                                            basic_text(
+                                                title: variation_data
+                                                        .messages
+                                                        .status
+                                                        .variationDetails
+                                                        .isNotEmpty
+                                                    ? '₹${variation_data.messages.status.variationDetails[0].salePrice}'
+                                                    : '₹${all_data.messages.status.singleProduct[0].salesPrice}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge!
+                                                    .copyWith(
+                                                      color: Colors.green,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                    )),
+                                          ],
+                                        ),
+                                      ),
+                                      // Product Description
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: Text(
+                                          all_data.messages.status
+                                              .singleProduct[0].description,
+                                          maxLines: 8,
+                                          style: TextStyle(fontSize: 14.0),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(16.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(Icons.remove),
+                                              onPressed: () {
+                                                setState(() {
+                                                  if (quantity > 1) {
+                                                    quantity--;
+                                                  }
+                                                });
+                                              },
+                                            ),
+                                            Text(
+                                              quantity.toString(),
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(Icons.add),
+                                              onPressed: () {
+                                                setState(() {
+                                                  quantity++;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // Add to Cart Button
+                                      Padding(
+                                        padding: EdgeInsets.all(16.0),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.orangered),
+                                          onPressed: () async {
+                                            if (all_data
+                                                        .messages
+                                                        .status
+                                                        .singleProduct[0]
+                                                        .productId !=
+                                                    '' ||
+                                                variation_id != '') {
+                                              //   final result =
+                                              //       await add_tocart_api()
+                                              //           .add_tocart(
+                                              //               user_id: widget.user,
+                                              //               product_id: all_data
+                                              //                   .messages
+                                              //                   .status
+                                              //                   .singleProduct[0]
+                                              //                   .productId,
+                                              //               quantity:
+                                              //                   quantity.toString(),
+                                              //               variation_id:
+                                              //                   variation_id);
+                                              //   if (result.messages.status ==
+                                              //       'Product Added Successfully') {
+                                              //     Provider.of<CartNotifier>(context,
+                                              //             listen: false)
+                                              //         .refreshCart(widget.user);
+                                              //     ScaffoldMessenger.of(context)
+                                              //         .showSnackBar(
+                                              //       SnackBar(
+                                              //         content: Text(
+                                              //             'Item Added Successfully to cart'),
+                                              //         backgroundColor: Colors.green,
+                                              //       ),
+                                              //     );
+                                              //     Navigator.pop(context);
+                                              //   }
+                                              // } else {
+                                              //   print('Missing Values');
+                                              await SharedPreferencesService().onAddToCart(
+                                                  UserProductResponse(
+                                                      userId:  widget.order_data.products?.first.userId??"",
+                                                      orderId: widget
+                                                          .order_data.orderId??"",
+                                                          otp:widget.otp,
+                                                      qty: quantity,
+                                                      productId:
+                                                          single_product_data
+                                                              .productId,
+                                                      productName:
+                                                          single_product_data
+                                                              .productName,
+                                                      paymentMode:  widget.order_data.products?.first.paymentMode??"",
+                                                      img: variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails
+                                                              .isNotEmpty
+                                                          ? variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails[0]
+                                                              .image
+                                                          : all_data
+                                                              .messages
+                                                              .status
+                                                              .singleProduct[0]
+                                                              .primaryImage,
+                                                      price: variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails
+                                                              .isNotEmpty
+                                                          ? variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails[0]
+                                                              .salePrice
+                                                          : all_data
+                                                              .messages
+                                                              .status
+                                                              .singleProduct[0]
+                                                              .salesPrice,
+                                                      variation: variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails
+                                                              .isNotEmpty
+                                                          ? variation_data
+                                                              .messages
+                                                              .status
+                                                              .variationDetails[0]
+                                                              .variationValue
+                                                          : '', addressId:  widget.order_data.products?.first.addressId??"", couponCode:  widget.order_data.products?.first.couponCode??"", deliveryboyId:  widget.order_data.products?.first.deliveryboyId??""),
+                                                  widget.order_data.products?.first.userId??"");
+                                              final result =
+                                                  await SharedPreferencesService()
+                                                      .getUserProductResponses(
+                                                          widget
+                                                              .order_data.products?.first.userId??"",
+                                                          widget.order_data
+                                                              .orderId??"");
+                                              final var_price = variation_data
                                                       .messages
                                                       .status
                                                       .variationDetails
                                                       .isNotEmpty
-                                                  ? '₹${variation_data.messages.status.variationDetails[0].salePrice}'
-                                                  : '₹${all_data.messages.status.singleProduct[0].salesPrice}',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge!
-                                                  .copyWith(
-                                                    color: Colors.green,
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  )),
-                                        ],
-                                      ),
-                                    ),
-                                    // Product Description
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Text(
-                                        all_data.messages.status
-                                            .singleProduct[0].description,
-                                        maxLines: 8,
-                                        style: TextStyle(fontSize: 14.0),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: Icon(Icons.remove),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (quantity > 1) {
-                                                  quantity--;
-                                                }
-                                              });
-                                            },
-                                          ),
-                                          Text(
-                                            quantity.toString(),
-                                            style: TextStyle(
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            icon: Icon(Icons.add),
-                                            onPressed: () {
-                                              setState(() {
-                                                quantity++;
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Add to Cart Button
-                                    Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                AppColors.orangered),
-                                        onPressed: () async {
-                                          if (all_data
+                                                  ? variation_data
+                                                      .messages
+                                                      .status
+                                                      .variationDetails[0]
+                                                      .salePrice
+                                                  : all_data
                                                       .messages
                                                       .status
                                                       .singleProduct[0]
-                                                      .productId !=
-                                                  '' ||
-                                              variation_id != '') {
-                                            //   final result =
-                                            //       await add_tocart_api()
-                                            //           .add_tocart(
-                                            //               user_id: widget.user,
-                                            //               product_id: all_data
-                                            //                   .messages
-                                            //                   .status
-                                            //                   .singleProduct[0]
-                                            //                   .productId,
-                                            //               quantity:
-                                            //                   quantity.toString(),
-                                            //               variation_id:
-                                            //                   variation_id);
-                                            //   if (result.messages.status ==
-                                            //       'Product Added Successfully') {
-                                            //     Provider.of<CartNotifier>(context,
-                                            //             listen: false)
-                                            //         .refreshCart(widget.user);
-                                            //     ScaffoldMessenger.of(context)
-                                            //         .showSnackBar(
-                                            //       SnackBar(
-                                            //         content: Text(
-                                            //             'Item Added Successfully to cart'),
-                                            //         backgroundColor: Colors.green,
-                                            //       ),
-                                            //     );
-                                            //     Navigator.pop(context);
-                                            //   }
-                                            // } else {
-                                            //   print('Missing Values');
-                                            await SharedPreferencesService().onAddToCart(
-                                                UserProductResponse(
-                                                    userId: widget.user,
-                                                    orderId: widget
-                                                        .order_data.orderId??"",
-                                                    qty: quantity,
-                                                    productName:
-                                                        single_product_data
-                                                            .productName,
-                                                    img: variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails
-                                                            .isNotEmpty
-                                                        ? variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails[0]
-                                                            .image
-                                                        : all_data
-                                                            .messages
-                                                            .status
-                                                            .singleProduct[0]
-                                                            .primaryImage,
-                                                    price: variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails
-                                                            .isNotEmpty
-                                                        ? variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails[0]
-                                                            .salePrice
-                                                        : all_data
-                                                            .messages
-                                                            .status
-                                                            .singleProduct[0]
-                                                            .salesPrice,
-                                                    variation: variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails
-                                                            .isNotEmpty
-                                                        ? variation_data
-                                                            .messages
-                                                            .status
-                                                            .variationDetails[0]
-                                                            .priceVariationId
-                                                        : ''),
-                                                widget.order_data.products?.first.userId??"");
-                                            final result =
-                                                await SharedPreferencesService()
-                                                    .getUserProductResponses(
-                                                        widget
-                                                            .order_data.products?.first.userId??"",
-                                                        widget.order_data
-                                                            .orderId??"");
-                                            final var_price = variation_data
-                                                    .messages
-                                                    .status
-                                                    .variationDetails
-                                                    .isNotEmpty
-                                                ? variation_data
-                                                    .messages
-                                                    .status
-                                                    .variationDetails[0]
-                                                    .salePrice
-                                                : all_data
-                                                    .messages
-                                                    .status
-                                                    .singleProduct[0]
-                                                    .salesPrice;
-                                            final selectedProduct =
-                                                result.where((element) =>
-                                                    element.productName ==
-                                                        single_product_data
-                                                            .productName &&
-                                                    element.price == var_price);
-                                            if (selectedProduct.isNotEmpty) {
-                                              Navigator.pop(context);
-                                              Navigator.pop(context, true);
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                      'Item Added To cart'),
-                                                  backgroundColor: Colors.green,
-                                                ),
-                                              );
+                                                      .salesPrice;
+                                              final selectedProduct =
+                                                  result.where((element) =>
+                                                      element.productName ==
+                                                          single_product_data
+                                                              .productName &&
+                                                      element.price == var_price);
+                                              if (selectedProduct.isNotEmpty) {
+                                                Navigator.pop(context);
+                                                Navigator.pop(context, true);
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        'Item Added To cart'),
+                                                    backgroundColor: Colors.green,
+                                                  ),
+                                                );
+                                              }
                                             }
-                                          }
-                                        },
-                                        child: Text(
-                                          'Add to Customer\'s Cart',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500),
+                                          },
+                                          child: Text(
+                                            'Add to Customer\'s Cart',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ));
-                    }
-                  },
-                ),
-              );
-            }
-          },
+                                    ],
+                                  );
+                                }
+                              },
+                            ));
+                      }
+                    },
+                  ),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
