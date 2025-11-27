@@ -14,6 +14,7 @@ import 'package:sm_delivery/models/order_response.dart';
 import 'package:sm_delivery/models/single_product_response.dart';
 import 'package:sm_delivery/navbar.dart';
 import 'package:sm_delivery/screens/search_screen.dart/search_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../api/variation.dart';
 import '../../components/basic_text.dart';
 import '../../components/text_box.dart';
@@ -264,46 +265,46 @@ updateProductqty({required String productName, required String qty, required Str
     return productVarList;
   }
 
-  int calculateTotalEach(UserProductResponse data) {
-    int total = 0;
-    try {
-      final price = double.tryParse(data.price) ?? 0.0;
+  // int calculateTotalEach(UserProductResponse data) {
+  //   int total = 0;
+  //   try {
+  //     final price = double.tryParse(data.price) ?? 0.0;
 
-      if (price > 0 && data.qty > 0) {
-        total += (price * data.qty).toInt();
-      } else {}
-    } catch (e) {}
-    return total;
-  }
+  //     if (price > 0 && data.qty > 0) {
+  //       total += (price * data.qty).toInt();
+  //     } else {}
+  //   } catch (e) {}
+  //   return total;
+  // }
 
-  num calculateTotalPrice(List<orderDetails> cartItems,
-      List<UserProductResponse> savedcartDetaileddata) {
-    num total = 0;
-    // for (var item in cartItems) {
-    //   print("item price fhebh: ${item.price}, quantity: ${item.qty}");
+  // num calculateTotalPrice(List<orderDetails> cartItems,
+  //     List<UserProductResponse> savedcartDetaileddata) {
+  //   num total = 0;
+  //   // for (var item in cartItems) {
+  //   //   print("item price fhebh: ${item.price}, quantity: ${item.qty}");
 
-    //   try {
-    //     final price = double.tryParse(item.price) ?? 0.0;
-    //     final quantity = int.tryParse(item.qty) ?? 0;
-    //     final couponAmount = int.tryParse(item.couponAmount) ?? 0;
+  //   //   try {
+  //   //     final price = double.tryParse(item.price) ?? 0.0;
+  //   //     final quantity = int.tryParse(item.qty) ?? 0;
+  //   //     final couponAmount = int.tryParse(item.couponAmount) ?? 0;
 
-    //     if (price > 0 && quantity > 0) {
-    //       total += (price * quantity).toInt();
-    //       print('Total: $total');
-    //     } else {}
-    //   } catch (e) {}
-    // }
-    for (var item in savedcartDetaileddata) {
-      try {
-        final price = double.tryParse(item.price) ?? 0.0;
-        if (price > 0 && item.qty > 0) {
-          total += (price * item.qty);
-          print('Total2: $total');
-        } else {}
-      } catch (e) {}
-    }
-    return total;
-  }
+  //   //     if (price > 0 && quantity > 0) {
+  //   //       total += (price * quantity).toInt();
+  //   //       print('Total: $total');
+  //   //     } else {}
+  //   //   } catch (e) {}
+  //   // }
+  //   for (var item in savedcartDetaileddata) {
+  //     try {
+  //       final price = double.tryParse(item.price) ?? 0.0;
+  //       if (price > 0 && item.qty > 0) {
+  //         total += (price * item.qty);
+  //         print('Total2: $total');
+  //       } else {}
+  //     } catch (e) {}
+  //   }
+  //   return total;
+  // }
 
   num calculateTotalCompletedPrice(List<orderDetails> cartItems) {
     num total = 0;
@@ -323,81 +324,81 @@ updateProductqty({required String productName, required String qty, required Str
     return total;
   }
 
-  num calculateTotal(List<orderDetails> cartItems,
-      List<UserProductResponse> savedcartDetaileddata) {
-    num total = 0;
+  // num calculateTotal(List<orderDetails> cartItems,
+  //     List<UserProductResponse> savedcartDetaileddata) {
+  //   num total = 0;
 
-    // for (var item in cartItems) {
-    //   try {
-    //     final price = double.tryParse(item.price) ?? 0.0;
-    //     final quantity = int.tryParse(item.qty) ?? 0;
-    //     final couponAmount = int.tryParse(item.couponAmount) ?? 0;
+  //   // for (var item in cartItems) {
+  //   //   try {
+  //   //     final price = double.tryParse(item.price) ?? 0.0;
+  //   //     final quantity = int.tryParse(item.qty) ?? 0;
+  //   //     final couponAmount = int.tryParse(item.couponAmount) ?? 0;
 
-    //     if (price > 0 && quantity > 0) {
-    //       total += (price * quantity).toInt();
-    //     } else {}
-    //   } catch (e) {}
-    // }
-    for (var item in savedcartDetaileddata) {
-      print("item price fhebh: ${item.price}, quantity: ${item.qty}");
-      try {
-        final price = double.tryParse(item.price) ?? 0.0;
-        final quantity = item.qty;
-        if (price > 0 && quantity > 0) {
-          total += (price * quantity);
-        } else {}
-      } catch (e) {}
-    }
+  //   //     if (price > 0 && quantity > 0) {
+  //   //       total += (price * quantity).toInt();
+  //   //     } else {}
+  //   //   } catch (e) {}
+  //   // }
+  //   for (var item in savedcartDetaileddata) {
+  //     print("item price fhebh: ${item.price}, quantity: ${item.qty}");
+  //     try {
+  //       final price = double.tryParse(item.price) ?? 0.0;
+  //       final quantity = item.qty;
+  //       if (price > 0 && quantity > 0) {
+  //         total += (price * quantity);
+  //       } else {}
+  //     } catch (e) {}
+  //   }
 
-    final couponAmount = int.tryParse(cartItems[0].couponAmount) ?? 0;
-    total = total - couponAmount;
+  //   final couponAmount = int.tryParse(cartItems[0].couponAmount) ?? 0;
+  //   total = total - couponAmount;
 
-    print('Final total after applying coupon: $total');
-    return total;
-  }
+  //   print('Final total after applying coupon: $total');
+  //   return total;
+  // }
 
-  num calculateTotalCompleted(List<orderDetails> cartItems,
-      List<UserProductResponse> savedcartDetaileddata) {
-    num total = 0;
+  // num calculateTotalCompleted(List<orderDetails> cartItems,
+  //     List<UserProductResponse> savedcartDetaileddata) {
+  //   num total = 0;
 
-    for (var item in cartItems) {
-      try {
-        final price = double.parse(item.price) ?? 0.0;
-        final quantity = int.parse(item.qty) ?? 0;
-        final couponAmount = int.parse(item.couponAmount) ?? 0;
+  //   for (var item in cartItems) {
+  //     try {
+  //       final price = double.parse(item.price) ?? 0.0;
+  //       final quantity = int.parse(item.qty) ?? 0;
+  //       final couponAmount = int.parse(item.couponAmount) ?? 0;
 
-        if (price > 0 && quantity > 0) {
-          total += (price * quantity);
-        } else {}
-      } catch (e) {}
-    }
+  //       if (price > 0 && quantity > 0) {
+  //         total += (price * quantity);
+  //       } else {}
+  //     } catch (e) {}
+  //   }
 
-    final couponAmount = double.parse(cartItems[0].couponAmount) ?? 0;
-    total = total - couponAmount;
+  //   final couponAmount = double.parse(cartItems[0].couponAmount) ?? 0;
+  //   total = total - couponAmount;
 
-    print('Final total after applying coupon: $total');
-    return total;
-  }
+  //   print('Final total after applying coupon: $total');
+  //   return total;
+  // }
 
-  num finalPrice(num actualPrice, String deliveryCharges, String oldcredit,
-      String intrestamount) {
-    num finalPrice = 0;
-    final shipping =
-        double.parse(deliveryCharges == '' ? '0' : deliveryCharges);
-    final credit = double.parse(oldcredit == '' ? '0' : oldcredit);
-    final intrest = double.parse(intrestamount == '' ? '0' : intrestamount);
-    finalPrice = finalPrice + shipping + actualPrice + credit + intrest;
-    print('final Price:${finalPrice}');
-    return finalPrice;
-  }
+  // num finalPrice(num actualPrice, String deliveryCharges, String oldcredit,
+  //     String intrestamount) {
+  //   num finalPrice = 0;
+  //   final shipping =
+  //       double.parse(deliveryCharges == '' ? '0' : deliveryCharges);
+  //   final credit = double.parse(oldcredit == '' ? '0' : oldcredit);
+  //   final intrest = double.parse(intrestamount == '' ? '0' : intrestamount);
+  //   finalPrice = finalPrice + shipping + actualPrice + credit + intrest;
+  //   print('final Price:${finalPrice}');
+  //   return finalPrice;
+  // }
 
-  num paidAmount(List<TransactionDetails> cartItems) {
-    num total = 0;
-    for (var items in cartItems) {
-      total = total + double.parse(items.paidAmount);
-    }
-    return total;
-  }
+  // num paidAmount(List<TransactionDetails> cartItems) {
+  //   num total = 0;
+  //   for (var items in cartItems) {
+  //     total = total + double.parse(items.paidAmount);
+  //   }
+  //   return total;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1096,6 +1097,34 @@ updateProductqty({required String productName, required String qty, required Str
                                                                                     .w500,
                                                                             overflow:
                                                                                 TextOverflow.clip)),
+                                                                                 SizedBox(
+                                  height: 40,
+                                  width: 120,
+                                  child: ElevatedButton.icon(
+                                    
+                                    onPressed: ()async{
+                                     final Uri url = Uri.parse(
+                                        "https://www.google.com/maps/search/?api=1&query=${ widget.orderresponse.products?.first.lat??""},${ widget.orderresponse.products?.first.lng??""}",
+                                      );
+
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(
+                                          url,
+                                          mode: LaunchMode.externalApplication, // Opens in Google Maps app/browser
+                                        );
+                                      } else {
+                                        throw "Could not launch Google Maps";
+                                      }
+                                  }, 
+                                  label: Text("Go To Map"), icon: Icon(Icons.location_on_outlined),style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primarycolor2,
+                                    foregroundColor: AppColors.white1,
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),)
+                                  ),),
+                                )
                                                                   ],
                                                                 ),
                                                               )

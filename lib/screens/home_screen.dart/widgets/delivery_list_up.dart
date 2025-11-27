@@ -128,108 +128,150 @@ class _delivery_list_upState extends State<delivery_list_up> {
     //     } else {
     //       orderDetailedResponse response = snapshot.data;
           return 
-         InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => delivery_detailed_screen(
-                        orderresponse: widget.order,
-                        userDetails: widget.userDetail,
-                      )));
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+         Container(
+           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10)),
+           child: Column(
+             children: [
+               InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => delivery_detailed_screen(
+                              orderresponse: widget.order,
+                              userDetails: widget.userDetail,
+                            )));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      basic_text(
-                        title: widget.order.orderId??"",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      basic_text(
-                        title: getOrderStatus(widget.order.orderStatus??""),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: getOrderStatusColor(widget.order.orderStatus??""),
-                            fontWeight: FontWeight.w500),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          basic_text(
+                            title: widget.order.orderId??"",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          basic_text(
+                            title: getOrderStatus(widget.order.orderStatus??""),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: getOrderStatusColor(widget.order.orderStatus??""),
+                                fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            widget.order.paymentMode == '1'
+                                ? 'Cash on Delivery'
+                                : 'Online Payment',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          Row(
+                            children: [
+                               Text('Name : ',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                           basic_text(
+                            title: widget.order.products?.first.customerName??"",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color:Colors.black,
+                                fontWeight: FontWeight.w500),
+                          ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                               Text('Phone : ',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                           basic_text(
+                            title: widget.order.products?.first.customerContactno??"",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color:Colors.black,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          SizedBox(width: 10,),
+                          InkWell(
+                            onTap: (){
+                              callUser(widget.order.products?.first.customerContactno??"");
+                            },
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.blue,
+                              child: Icon(Icons.call,color: Colors.white,size: 16,),
+                            ),
+                          )
+                            ],
+                          ),
+                       
+                        ],
                       ),
                       Text(
-                        widget.order.paymentMode == '1'
-                            ? 'Cash on Delivery'
-                            : 'Online Payment',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                      Row(
-                        children: [
-                           Text('Name : ',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                       basic_text(
-                        title: widget.order.products?.first.customerName??"",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color:Colors.black,
-                            fontWeight: FontWeight.w500),
-                      ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                           Text('Phone : ',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                       basic_text(
-                        title: widget.order.products?.first.customerContactno??"",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color:Colors.black,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      SizedBox(width: 10,),
-                      InkWell(
-                        onTap: (){
-                          callUser(widget.order.products?.first.customerContactno??"");
-                        },
-                        child: CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Colors.blue,
-                          child: Icon(Icons.call,color: Colors.white,size: 16,),
-                        ),
+                        '₹${widget.order.allTotal ??""}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       )
-                        ],
-                      ),
-                      SizedBox(height: 8,),
-                      Row(
-                        children: [
-                           Text('Address : ',
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                       basic_text(
-                        title: widget.order.products?.first.deliveryAddress??"",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color:Colors.black),
-                      ),
-                        ],
-                      ),
                     ],
                   ),
-                  Text(
-                    '₹${widget.order.allTotal ??""}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-            ),
-          );
+                ),
+                Divider(),
+                   SizedBox(height: 8,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                   Expanded(
+                                     child: basic_text(
+                                      title: widget.order.products?.first.deliveryAddress??"",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color:Colors.black),
+                                                                       ),
+                                   ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                  width: 120,
+                                  child: ElevatedButton.icon(
+                                    
+                                    onPressed: ()async{
+                                     final Uri url = Uri.parse(
+                                        "https://www.google.com/maps/search/?api=1&query=${widget.order.products?.first.lat??""},${widget.order.products?.first.lng??""}",
+                                      );
+
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(
+                                          url,
+                                          mode: LaunchMode.externalApplication, // Opens in Google Maps app/browser
+                                        );
+                                      } else {
+                                        throw "Could not launch Google Maps";
+                                      }
+                                  }, 
+                                  label: Text("Go To Map"), icon: Icon(Icons.location_on_outlined),style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primarycolor2,
+                                    foregroundColor: AppColors.white1,
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),)
+                                  ),),
+                                )
+                              ],
+                            ),
+                            SizedBox(height: 8,),
+             ],
+           ),
+         );
     //     }
     //   },
     // );

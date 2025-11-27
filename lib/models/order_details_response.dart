@@ -156,7 +156,7 @@ class TransactionDetails {
   final String createdDate;
    final String? status;
     final int? daysDiff;
-    final int? interestRate;
+    final dynamic interestRate;
     final String? interestAmount;
     final String? shippingCharge;
 

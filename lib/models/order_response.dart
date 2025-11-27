@@ -99,6 +99,8 @@ class Order {
     String? deliveryBoyName;
     String? customerName;
     String? customerContactno;
+    String? lat;
+    String? lng;
     String? cityId;
     String? stateId;
     String? deliveryAddress;
@@ -129,6 +131,8 @@ class Order {
         this.deliveryBoyName,
         this.customerName,
         this.customerContactno,
+        this.lat,
+        this.lng,
         this.cityId,
         this.stateId,
         this.deliveryAddress,
@@ -164,6 +168,8 @@ class Order {
         deliveryBoyName: json["delivery_boy_name"],
         customerName: json["customer_name"],
         customerContactno: json["customer_contactno"],
+        lat: json["lat"],
+        lng: json["lng"],
         cityId: json["city_id"],
         stateId: json["state_id"],
         deliveryAddress: json["delivery_address"],
@@ -195,6 +201,8 @@ class Order {
         "delivery_boy_name": deliveryBoyName,
         "customer_name": customerName,
         "customer_contactno": customerContactno,
+        "lat": lat,
+        "lng": lng,
         "city_id": cityId,
         "state_id": stateId,
         "delivery_address": deliveryAddress,

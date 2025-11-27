@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1086158122863",
+    "project_id": "sobhamart-customer",
+    "storage_bucket": "sobhamart-customer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086158122863:android:a0a917f4769bd20ed6429a",
+        "android_client_info": {
+          "package_name": "app.sobhamart.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn2Lv7SBfDr12Q1GlfW9aTTuxggGXHM7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086158122863:android:1c1914bc1ed6f112d6429a",
+        "android_client_info": {
+          "package_name": "delivery.sobhamart.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn2Lv7SBfDr12Q1GlfW9aTTuxggGXHM7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
